@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using MathNet.Numerics.LinearAlgebra;
 
 namespace Genetics
 {
@@ -7,14 +8,14 @@ namespace Genetics
 	{
 		public static double carryoverPercent = 0.05;
 		
-		double[] descendancePart = new double[7];
+		readonly double[] descendancePart = new double[7];
 
 		public Chromosome(Race race)
 		{
 			descendancePart[(int)race] = 1;
 		}
 
-		private Chromosome(double[] descendancePartPercent)
+		public Chromosome(double[] descendancePartPercent)
 		{
 			if (descendancePartPercent.Count() != 7) throw new Exception("wrong sized argument");
 			this.descendancePart = descendancePartPercent;
@@ -29,22 +30,28 @@ namespace Genetics
 		{
 			double[] intrusion = new double[7];
 			double intrusionSize = 0;
-			Chromosome newChromosome = new Chromosome(basis);
+
+			//DEBUG			
+			//Vector<double> b = Vector<double>.Build.Dense(basis.descendancePart);
+			//Vector<double> intruder = Vector<double>.Build.Dense(crossoverIntruder.descendancePart);
+			//double x = b.DotProduct(intruder);
+
 
 			for (int i=0; i < 7; i++) 
 			{
-				intrusion[i] = crossoverIntruder.descendancePart[i] * carryoverPercent;
+				intrusion[i] = Math.Round(crossoverIntruder.descendancePart[i] * carryoverPercent, 5);
 				intrusionSize += intrusion[i];				
 			}
 
 			double contrlSum = 0;
 			double maxDesc = 0;
 			int maxDescIndex = 0;
-
+			Chromosome newChromosome = new Chromosome(basis);
+			
 
 			for (int i = 0; i < 7; i++)
 			{
-				newChromosome.descendancePart[i] -= basis.descendancePart[i] * intrusionSize;
+				newChromosome.descendancePart[i] -= Math.Round(basis.descendancePart[i] * intrusionSize, 5);
 				newChromosome.descendancePart[i] += intrusion[i];
 				contrlSum += newChromosome.descendancePart[i];
 				if (newChromosome.descendancePart[i] > maxDesc)
@@ -56,6 +63,7 @@ namespace Genetics
 
 
 			double evenizer = 0;
+
 			//Corrction
 			if (contrlSum !=1)
 			{
@@ -63,10 +71,7 @@ namespace Genetics
 				newChromosome.descendancePart[maxDescIndex] += evenizer;
 			}
 
-			//DEBUG
-			if (newChromosome.descendancePart.Sum() - 1 >= 0.000001) throw new Exception("Mutant!");
-
-			return newChromosome;			
+			return newChromosome;		
 		}
 
 		public double GetDescendancePercent(Race race)
