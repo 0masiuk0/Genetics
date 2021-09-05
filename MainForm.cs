@@ -163,13 +163,13 @@ namespace Genetics
 				dynaianCountTextBox.Enabled = changingSeedParamtersAllowed;
 		}
 
-		private void theBackgorundWorker_DoWork(object sender, DoWorkEventArgs e)
+		private void TheBackgorundWorker_DoWork(object sender, DoWorkEventArgs e)
 		{
 			int genNuber = (int)e.Argument;			
 			population.MakeNewGenerations(genNuber, sender as BackgroundWorker);
 		}
 
-		private void theBackgorundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+		private void TheBackgorundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
 		{
 			if (progressUpdateAllowed)
 			{
@@ -188,7 +188,7 @@ namespace Genetics
 			progressUpdateAllowed = true;
 		}
 
-		private void theBackgorundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+		private void TheBackgorundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
 			ProgressUpdateTimer.Stop();
 			UpdateStats();

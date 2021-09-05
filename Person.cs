@@ -23,7 +23,7 @@ namespace Genetics
 			}
 		}
 				
-		static double StdDevToPercentCoef = 1 / ArrayStatistics.StandardDeviation(new int[7] { 0, 0, 0, 0, 0, 0, 1 });
+		static readonly double StdDevToPercentCoef = 1 / ArrayStatistics.StandardDeviation(new int[7] { 0, 0, 0, 0, 0, 0, 1 });
 
 		public bool IsWoman { get; private set; }
 
@@ -219,11 +219,11 @@ namespace Genetics
 		}
 
 		readonly static Random randomGeneratorGender = new Random();
-		static object randomGeneratorGenderLock1 = new object();
+		static readonly object randomGeneratorGenderLock1 = new object();
 		readonly static Random chromosomeChooserRaandomGenerator = new Random();
-		static object chromosomeChooserRaandomGeneratorLock = new object();
+		static readonly object chromosomeChooserRaandomGeneratorLock = new object();
 		readonly static Random winnerChooserRandomGenerator = new Random();
-		static object winnerChooserRandomGeneratorLock = new object();
+		static readonly object winnerChooserRandomGeneratorLock = new object();
 	}
 
 	public enum Race { Moiran = 0, Julian = 1, Aivian = 2, Feklite = 3, Camelite = 4, Dynian = 5, Aidian = 6 }

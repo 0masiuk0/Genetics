@@ -31,11 +31,6 @@ namespace Genetics
 			double[] intrusion = new double[7];
 			double intrusionSize = 0;
 
-			//DEBUG			
-			//Vector<double> b = Vector<double>.Build.Dense(basis.descendancePart);
-			//Vector<double> intruder = Vector<double>.Build.Dense(crossoverIntruder.descendancePart);
-			//double x = b.DotProduct(intruder);
-
 
 			for (int i=0; i < 7; i++) 
 			{
@@ -62,7 +57,7 @@ namespace Genetics
 			}
 
 
-			double evenizer = 0;
+			double evenizer;
 
 			//Corrction
 			if (contrlSum !=1)
