@@ -15,13 +15,12 @@ namespace Genetics
 		public long ChicksCount { get; private set; }
 		public long PeopleCount => DudesCount + ChicksCount;
 		public int GenerationNumber { get; private set; }
-		public double genderRatio { get; private set; }
+		public double GenderRatio { get; private set; }
 
 		private Person[] NextGeneration;
 		private long nextGenDudesCount = 0;
 		private long nextGenChicksCount = 0;
 
-		private object progressReportLock = new object();
 		private GenerationsGenerationProgressReport progressReport;
 
 		public static double BirthRate  { get; set; }
@@ -85,8 +84,8 @@ namespace Genetics
 		}
 
 		int MotherIndex = 0;
-		object MommyLock = new object();
-		object CounterLock = new object();
+		readonly object MommyLock = new object();
+		readonly object CounterLock = new object();
 		System.ComponentModel.BackgroundWorker backgroundWorker;
 
 		void DeliverBaby(int i)
@@ -137,7 +136,7 @@ namespace Genetics
 
 			DudesCount = DudeCounter;
 			ChicksCount = ChickCounter;
-			genderRatio = (double)DudesCount / (double)ChicksCount;
+			GenderRatio = (double)DudesCount / (double)ChicksCount;
 
 			NextGeneration = null;
 			nextGenChicksCount = nextGenDudesCount = 0;
@@ -147,7 +146,7 @@ namespace Genetics
 
 		private SortedDictionary<long, Person> ChooseMalePartnerCandidatesFor(long motherIndex)
 		{
-			long centralDudeIndex = (long)Math.Floor(motherIndex * genderRatio);
+			long centralDudeIndex = (long)Math.Floor(motherIndex * GenderRatio);
 			long startIndex = Math.Max(centralDudeIndex - GroomSearchRadius, 0);
 			long stopIndex = Math.Min(centralDudeIndex + GroomSearchRadius, DudesCount);
 			int candidatesCount = (int)(stopIndex - startIndex);

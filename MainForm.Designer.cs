@@ -89,9 +89,9 @@ namespace Genetics
 			// makewNewGenerationsAsyncWorker
 			// 
 			this.makewNewGenerationsAsyncWorker.WorkerReportsProgress = true;
-			this.makewNewGenerationsAsyncWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.theBackgorundWorker_DoWork);
-			this.makewNewGenerationsAsyncWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.theBackgorundWorker_ProgressChanged);
-			this.makewNewGenerationsAsyncWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.theBackgorundWorker_RunWorkerCompleted);
+			this.makewNewGenerationsAsyncWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.TheBackgorundWorker_DoWork);
+			this.makewNewGenerationsAsyncWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.TheBackgorundWorker_ProgressChanged);
+			this.makewNewGenerationsAsyncWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.TheBackgorundWorker_RunWorkerCompleted);
 			// 
 			// groupBox2
 			// 

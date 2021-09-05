@@ -12,3 +12,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Style", "IDE1006:Стили именования", Justification = "<Ожидание>", Scope = "member", Target = "~M:Genetics.MainForm.paramterTextBoxKeyPressed(System.Object,System.Windows.Forms.KeyEventArgs)")]
 [assembly: SuppressMessage("Style", "IDE1006:Стили именования", Justification = "<Ожидание>", Scope = "member", Target = "~P:Genetics.Population.racialPurityImportanceDepretiationCoef")]
 [assembly: SuppressMessage("Style", "IDE0044:Добавить модификатор только для чтения", Justification = "<Ожидание>", Scope = "member", Target = "~F:Genetics.Person.descendancePartPercent")]
+[assembly: SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "<Pending>", Scope = "member", Target = "~F:Genetics.MainForm.ProgressUpdateTimer")]
