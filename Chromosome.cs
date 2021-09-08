@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
-using MathNet.Numerics.LinearAlgebra;
 
 namespace Genetics
 {
+	//TESTED
 	public class Chromosome
 	{
 		public static double carryoverPercent = 0.05;
-		
+
 		readonly double[] descendancePart = new double[7];
 
 		public Chromosome(Race race)
@@ -21,7 +21,7 @@ namespace Genetics
 			this.descendancePart = descendancePartPercent;
 		}
 
-		private Chromosome(Chromosome copyOrigin) 
+		private Chromosome(Chromosome copyOrigin)
 		{
 			copyOrigin.descendancePart.CopyTo(this.descendancePart, 0);
 		}
@@ -32,17 +32,17 @@ namespace Genetics
 			double intrusionSize = 0;
 
 
-			for (int i=0; i < 7; i++) 
+			for (int i = 0; i < 7; i++)
 			{
 				intrusion[i] = Math.Round(crossoverIntruder.descendancePart[i] * carryoverPercent, 5);
-				intrusionSize += intrusion[i];				
+				intrusionSize += intrusion[i];
 			}
 
 			double contrlSum = 0;
 			double maxDesc = 0;
 			int maxDescIndex = 0;
 			Chromosome newChromosome = new Chromosome(basis);
-			
+
 
 			for (int i = 0; i < 7; i++)
 			{
@@ -60,18 +60,23 @@ namespace Genetics
 			double evenizer;
 
 			//Correction
-			if (contrlSum !=1)
+			if (contrlSum != 1)
 			{
 				evenizer = 1 - contrlSum;
 				newChromosome.descendancePart[maxDescIndex] += evenizer;
 			}
 
-			return newChromosome;		
+			return newChromosome;
 		}
 
 		public double GetDescendancePercent(Race race)
 		{
 			return descendancePart[(int)race];
+		}
+
+		public override string ToString()
+		{
+			return descendancePart.ToString();
 		}
 	}
 }

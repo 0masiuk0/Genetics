@@ -27,7 +27,8 @@ namespace Genetics
 
 		public bool IsWoman { get; private set; }
 
-		protected Chromosome[,] chromosomes = new Chromosome[2, 23];
+		//DEBUG access modificator public, release shall be "protected"
+		/* protected*/ public Chromosome[,] chromosomes = new Chromosome[2, 23];
 		static readonly Race[] possibleRaces = new Race[7] {Race.Moiran, Race.Julian, Race.Aivian, Race.Feklite,
 			Race.Camelite, Race.Dynian, Race.Aidian};
 
@@ -53,10 +54,7 @@ namespace Genetics
 			{
 				IsWoman = randomGeneratorGender.Next(0, 2) == 0;
 			}
-			chromosomes[0, 0] = IsWoman ?
-				Chromosome.Meiosis(father.chromosomes[0, 0], father.chromosomes[1, 0])
-				:
-				Chromosome.Meiosis(father.chromosomes[1, 0], father.chromosomes[0, 0]);
+			chromosomes[0, 0] = IsWoman ? father.chromosomes[0, 0] : father.chromosomes[1, 0];				
 
 			chromosomes[1, 0] = GetRandomGaploidChromosome(mother, 0);
 
@@ -70,7 +68,7 @@ namespace Genetics
 		Chromosome GetRandomGaploidChromosome(Person parent, int pairNumber)
 		{
 			bool chosenHomologicChromosome = false;
-			lock (chromosomeChooserRaandomGeneratorLock)
+			lock (chromosomeChooserRandomGeneratorLock)
 			{
 				chosenHomologicChromosome = chromosomeChooserRaandomGenerator.Next(0, 2) == 0;
 			}
@@ -221,7 +219,7 @@ namespace Genetics
 		readonly static Random randomGeneratorGender = new Random();
 		static readonly object randomGeneratorGenderLock1 = new object();
 		readonly static Random chromosomeChooserRaandomGenerator = new Random();
-		static readonly object chromosomeChooserRaandomGeneratorLock = new object();
+		static readonly object chromosomeChooserRandomGeneratorLock = new object();
 		readonly static Random winnerChooserRandomGenerator = new Random();
 		static readonly object winnerChooserRandomGeneratorLock = new object();
 	}

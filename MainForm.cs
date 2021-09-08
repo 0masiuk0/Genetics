@@ -108,7 +108,13 @@ namespace Genetics
 			validParameters &= int.TryParse(groomSearchRadiusTextBox.Text, out int groomsSearchRadius);
 			validParameters &= double.TryParse(racialPurityDevalvationTextBox.Text, out double racialPurityDepreciationCoef);
 			validParameters &= double.TryParse(raciaPurityImportanceCoefTextBox.Text, out double racialPurityImportanceCoef);
-			
+
+			validParameters &= birthRate > 0;
+			validParameters &= groomsCount > 0;
+			validParameters &= groomsSearchRadius > 0;
+			validParameters &= racialPurityImportanceCoef > 0 && racialPurityImportanceCoef <= 1;
+			validParameters &= racialPurityDepreciationCoef >= 0 && racialPurityDepreciationCoef <= 1;
+
 			if (validParameters)
 			{
 				Population.BirthRate = birthRate;

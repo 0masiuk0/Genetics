@@ -23,6 +23,7 @@ namespace Genetics
 
 		private GenerationsGenerationProgressReport progressReport;
 
+		//TODO: validation of input
 		public static double BirthRate  { get; set; }
 		public static int GroomSearchRadius { get; set; }
 		public static int GroomCount { get; set; }
