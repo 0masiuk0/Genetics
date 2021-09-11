@@ -54,15 +54,29 @@ namespace Genetics
 			{
 				IsWoman = randomGeneratorGender.Next(0, 2) == 0;
 			}
-			chromosomes[0, 0] = IsWoman ? father.chromosomes[0, 0] : father.chromosomes[1, 0];				
+			chromosomes[0, 0] = IsWoman ? father.chromosomes[0, 0] : father.chromosomes[1, 0];
 
-			chromosomes[1, 0] = GetRandomGaploidChromosome(mother, 0);
+			bool chosenXChromosome;
+			lock (chromosomeChooserRandomGeneratorLock)
+			{
+				chosenXChromosome = chromosomeChooserRaandomGenerator.Next(0, 2) == 0;
+			}
+			chromosomes[1, 0] = chosenXChromosome ? mother.chromosomes[0, 0] : mother.chromosomes[1, 0];
 
 			for (int i = 1; i < 23; i++)
 			{
 				chromosomes[0, i] = GetRandomGaploidChromosome(father, i);
 				chromosomes[1, i] = GetRandomGaploidChromosome(mother, i);
 			}
+		}			
+
+		//unit tests mock geeration constructor
+		public Person(Chromosome[,] chromosomes, bool IsWoman)
+		{
+			if (chromosomes.GetLength(0) != 2 && chromosomes.GetLength(1) != 23) throw new Exception("Mutant!!!");
+
+			this.chromosomes = chromosomes;
+			this.IsWoman = IsWoman;
 		}
 
 		Chromosome GetRandomGaploidChromosome(Person parent, int pairNumber)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 
 namespace Genetics
 {
@@ -72,10 +73,15 @@ namespace Genetics
 		public double GetDescendancePercent(Race race)
 		{
 			return descendancePart[(int)race];
-		}
+		}		
 
 		public override string ToString()
 		{
+			string s = "";
+			foreach (double d in descendancePart)
+				s += $"{d.ToString()}, ";
+			s = s.SkipLast(2).ToString();
+
 			return descendancePart.ToString();
 		}
 	}
