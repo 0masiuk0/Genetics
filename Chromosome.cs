@@ -79,10 +79,8 @@ namespace Genetics
 		{
 			string s = "";
 			foreach (double d in descendancePart)
-				s += $"{d.ToString()}, ";
-			s = s.SkipLast(2).ToString();
-
-			return descendancePart.ToString();
+				s += $"{d}, ";
+			return s.Remove(s.Length - 2);			 
 		}
 	}
 }

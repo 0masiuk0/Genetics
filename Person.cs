@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Threading.Tasks;
 using MathNet.Numerics.Statistics;
 
@@ -136,25 +137,55 @@ namespace Genetics
 					chromosomes[i, j] = new Chromosome(race);
 		}
 
-		public Person ChooseMalePartnerFrom(SortedDictionary<long, Person> candidates)
+		public Person ChooseMalePartnerFrom(Dictionary<ulong, Person> candidates)
 		{
 			if (!IsWoman) throw new Exception("No gayness allowed");
+			
+			Dictionary<ulong, Person> attractivnessKeyedCandidates = GetAttractinessKeyedCandidates(candidates, out ulong maxKey);
 
-			SortedDictionary<ulong, Person> attractivnessKeyedCandidates = new SortedDictionary<ulong, Person>();
-			SortedDictionary<long,Person>.Enumerator candidatesEnumerator = candidates.GetEnumerator();
+			double winningPoint;
+			lock (winnerChooserRandomGeneratorLock)
+			{
+				winningPoint = (double)winnerChooserRandomGenerator.Next(0, 100000001) / 100000000;
+			}
 
-			ulong roulletSectorStart = 0;
+			ulong winningNumberLong = (ulong)Math.Round((double)maxKey * winningPoint);
 
-			Person groom;
+			var en = candidates.GetEnumerator();
+			en.MoveNext();
+			Person groom = en.Current.Value;
+
+			Dictionary<ulong, Person>.Enumerator candidatesEnumerator2 = attractivnessKeyedCandidates.GetEnumerator();
+
+			while (candidatesEnumerator2.MoveNext() && candidatesEnumerator2.Current.Key <= winningNumberLong)
+			{
+				groom = candidatesEnumerator2.Current.Value;
+			}
+
+			return groom;
+		}
+
+		/*DEBUG Release modifier private*/
+		public Dictionary<ulong, Person> GetAttractinessKeyedCandidates(Dictionary<ulong, Person> candidates, out ulong lastKey)
+		{
+			ulong roulletSectorMarker;
+			
+			Dictionary<ulong, Person> attractivnessKeyedCandidates;
+			lastKey = 0;
+
+			attractivnessKeyedCandidates = new Dictionary<ulong, Person>();
+			Dictionary<ulong, Person>.Enumerator candidatesEnumerator = candidates.GetEnumerator();
+
+			roulletSectorMarker = 0;
 			candidatesEnumerator.MoveNext();
-			Person candidate = groom = candidatesEnumerator.Current.Value;
+			Person candidate = candidatesEnumerator.Current.Value;
 			if (candidate == null) throw new Exception("no groom candidates found");
 			double attractiveness = Person.CalculateMutualAttractionCoefficient(this, candidate);
 			if (attractiveness >= (1 / 10000))
 			{
-				attractivnessKeyedCandidates.Add(roulletSectorStart, candidate);
 				uint attractivenessPercent = (uint)Math.Round(attractiveness * 10000);
-				roulletSectorStart += attractivenessPercent;
+				lastKey = roulletSectorMarker += attractivenessPercent;
+				attractivnessKeyedCandidates.Add(roulletSectorMarker, candidate);
 			}
 
 
@@ -164,28 +195,15 @@ namespace Genetics
 				attractiveness = Person.CalculateMutualAttractionCoefficient(this, candidate);
 				if (attractiveness > (1 / 10000))
 				{
-					attractivnessKeyedCandidates.Add(roulletSectorStart, candidate);
 					uint attractivenessPercent = (uint)Math.Round(attractiveness * 10000);
-					roulletSectorStart += attractivenessPercent;
+					lastKey = roulletSectorMarker += attractivenessPercent;
+					attractivnessKeyedCandidates.Add(roulletSectorMarker, candidate);
 				}
 			}
 
-			double winningPoint;
-			lock (winnerChooserRandomGeneratorLock)
-			{
-				winningPoint = (double)winnerChooserRandomGenerator.Next(0, 100000000) / 100000000;
-			}
+			if (lastKey == 0) throw new Exception("no groooms found");
 
-			ulong winningNumberLong = (ulong)Math.Round((double)roulletSectorStart * winningPoint);
-
-			SortedDictionary<ulong, Person>.Enumerator candidatesEnumerator2 = attractivnessKeyedCandidates.GetEnumerator();						
-
-			while (candidatesEnumerator2.MoveNext() && candidatesEnumerator2.Current.Key < winningNumberLong)
-			{
-				groom = candidatesEnumerator2.Current.Value;				
-			}
-
-			return groom;
+			return attractivnessKeyedCandidates;
 		}
 
 		public Person ConcieveFrom(Person father)
