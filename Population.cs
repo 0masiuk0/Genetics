@@ -99,7 +99,7 @@ namespace Genetics
 				if (MotherIndex == ChicksCount) MotherIndex = 0;
 			}
 			Person mommy = Chicks[chosenMommyindex];
-			SortedDictionary<long, Person> daddyCandidates = ChooseMalePartnerCandidatesFor(chosenMommyindex);
+			List<Person> daddyCandidates = ChooseMalePartnerCandidatesFor(chosenMommyindex);
 			Person daddy = mommy.ChooseMalePartnerFrom(daddyCandidates);
 			NextGeneration[i] = mommy.ConcieveFrom(daddy);
 
@@ -145,27 +145,27 @@ namespace Genetics
 			GenerationNumber++;
 		}
 
-		private SortedDictionary<long, Person> ChooseMalePartnerCandidatesFor(long motherIndex)
+		private List<Person> ChooseMalePartnerCandidatesFor(long motherIndex)
 		{
 			long centralDudeIndex = (long)Math.Floor(motherIndex * GenderRatio);
-			long startIndex = Math.Max(centralDudeIndex - GroomSearchRadius, 0);
-			long stopIndex = Math.Min(centralDudeIndex + GroomSearchRadius, DudesCount);
+			ulong startIndex = (ulong)Math.Max(centralDudeIndex - GroomSearchRadius, 0);
+			ulong stopIndex = (ulong)Math.Min(centralDudeIndex + GroomSearchRadius, DudesCount);
 			int candidatesCount = (int)(stopIndex - startIndex);
-			SortedDictionary<long, Person> selectedCandidates = new SortedDictionary<long, Person>();
+			List<Person> selectedCandidates = new List<Person>((int)(stopIndex-startIndex));
 
-			for(long i = startIndex; i<stopIndex; i++)
+			for(ulong i = startIndex; i<stopIndex; i++)
 			{
-				selectedCandidates.Add(i, Dudes[i]);
+				selectedCandidates.Add(Dudes[i]);
 			}
 
 			int LooserDudesCount = candidatesCount - GroomCount;
 			if (LooserDudesCount < 0) LooserDudesCount = 0;
-			int looserIndex;
+			ulong looserIndex;
 
 			for(int i=0; i < LooserDudesCount; i++)
 			{
-				looserIndex = rnd.Next(candidatesCount);
-				selectedCandidates.Remove(looserIndex);
+				looserIndex = (ulong)rnd.Next(candidatesCount);
+				selectedCandidates.Remove(selectedCandidates[(int)looserIndex]);
 				candidatesCount--;
 			}
 
