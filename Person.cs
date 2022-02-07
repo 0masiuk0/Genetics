@@ -137,7 +137,7 @@ namespace Genetics
 					chromosomes[i, j] = new Chromosome(race);
 		}
 
-		public Person ChooseMalePartnerFrom(Dictionary<ulong, Person> candidates)
+		public Person ChooseMalePartnerFrom(List<Person> candidates)
 		{
 			if (!IsWoman) throw new Exception("No gayness allowed");
 			
@@ -153,7 +153,7 @@ namespace Genetics
 
 			var en = candidates.GetEnumerator();
 			en.MoveNext();
-			Person groom = en.Current.Value;
+			Person groom = en.Current;
 
 			Dictionary<ulong, Person>.Enumerator candidatesEnumerator2 = attractivnessKeyedCandidates.GetEnumerator();
 
@@ -166,7 +166,7 @@ namespace Genetics
 		}
 
 		/*DEBUG Release modifier private*/
-		public Dictionary<ulong, Person> GetAttractinessKeyedCandidates(Dictionary<ulong, Person> candidates, out ulong lastKey)
+		public Dictionary<ulong, Person> GetAttractinessKeyedCandidates(List<Person> candidates, out ulong lastKey)
 		{
 			ulong roulletSectorMarker;
 			
@@ -174,11 +174,11 @@ namespace Genetics
 			lastKey = 0;
 
 			attractivnessKeyedCandidates = new Dictionary<ulong, Person>();
-			Dictionary<ulong, Person>.Enumerator candidatesEnumerator = candidates.GetEnumerator();
+			List<Person>.Enumerator candidatesEnumerator = candidates.GetEnumerator();
 
 			roulletSectorMarker = 0;
 			candidatesEnumerator.MoveNext();
-			Person candidate = candidatesEnumerator.Current.Value;
+			Person candidate = candidatesEnumerator.Current;
 			if (candidate == null) throw new Exception("no groom candidates found");
 			double attractiveness = Person.CalculateMutualAttractionCoefficient(this, candidate);
 			if (attractiveness >= (1 / 10000))
@@ -191,7 +191,7 @@ namespace Genetics
 
 			while (candidatesEnumerator.MoveNext())
 			{
-				candidate = candidatesEnumerator.Current.Value;
+				candidate = candidatesEnumerator.Current;
 				attractiveness = Person.CalculateMutualAttractionCoefficient(this, candidate);
 				if (attractiveness > (1 / 10000))
 				{
