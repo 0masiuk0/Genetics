@@ -143,13 +143,7 @@ namespace Genetics
 			
 			Dictionary<ulong, Person> attractivnessKeyedCandidates = GetAttractinessKeyedCandidates(candidates, out ulong maxKey);
 
-			double winningPoint;
-			lock (winnerChooserRandomGeneratorLock)
-			{
-				winningPoint = (double)winnerChooserRandomGenerator.Next(0, 100000001) / 100000000;
-			}
-
-			ulong winningNumberLong = (ulong)Math.Round((double)maxKey * winningPoint);
+			ulong winningPoint = Auxiliaries.GetRandomUlong(maxKey + 1);			
 
 			var en = candidates.GetEnumerator();
 			en.MoveNext();
@@ -157,7 +151,7 @@ namespace Genetics
 
 			Dictionary<ulong, Person>.Enumerator candidatesEnumerator2 = attractivnessKeyedCandidates.GetEnumerator();
 
-			while (candidatesEnumerator2.MoveNext() && candidatesEnumerator2.Current.Key <= winningNumberLong)
+			while (candidatesEnumerator2.MoveNext() && candidatesEnumerator2.Current.Key <= winningPoint)
 			{
 				groom = candidatesEnumerator2.Current.Value;
 			}
@@ -171,8 +165,7 @@ namespace Genetics
 			ulong roulletSectorMarker;
 			
 			Dictionary<ulong, Person> attractivnessKeyedCandidates;
-			lastKey = 0;
-
+			
 			attractivnessKeyedCandidates = new Dictionary<ulong, Person>();
 			List<Person>.Enumerator candidatesEnumerator = candidates.GetEnumerator();
 
@@ -184,7 +177,7 @@ namespace Genetics
 			if (attractiveness >= (1 / 10000))
 			{
 				uint attractivenessPercent = (uint)Math.Round(attractiveness * 10000);
-				lastKey = roulletSectorMarker += attractivenessPercent;
+				roulletSectorMarker += attractivenessPercent;
 				attractivnessKeyedCandidates.Add(roulletSectorMarker, candidate);
 			}
 
@@ -196,12 +189,14 @@ namespace Genetics
 				if (attractiveness > (1 / 10000))
 				{
 					uint attractivenessPercent = (uint)Math.Round(attractiveness * 10000);
-					lastKey = roulletSectorMarker += attractivenessPercent;
+					roulletSectorMarker += attractivenessPercent;
 					attractivnessKeyedCandidates.Add(roulletSectorMarker, candidate);
 				}
 			}
 
-			if (lastKey == 0) throw new Exception("no groooms found");
+			if (roulletSectorMarker == 0) throw new Exception("no groooms found");
+
+			lastKey = roulletSectorMarker;
 
 			return attractivnessKeyedCandidates;
 		}
@@ -247,13 +242,13 @@ namespace Genetics
 
 			return ChickAttractionToDude * DudeAttractionToChick;
 		}
+		
+	
 
 		readonly static Random randomGeneratorGender = new Random();
 		static readonly object randomGeneratorGenderLock1 = new object();
 		readonly static Random chromosomeChooserRaandomGenerator = new Random();
-		static readonly object chromosomeChooserRandomGeneratorLock = new object();
-		readonly static Random winnerChooserRandomGenerator = new Random();
-		static readonly object winnerChooserRandomGeneratorLock = new object();
+		static readonly object chromosomeChooserRandomGeneratorLock = new object();		
 	}
 
 	public enum Race { Moiran = 0, Julian = 1, Aivian = 2, Feklite = 3, Camelite = 4, Dynian = 5, Aidian = 6 }
