@@ -140,20 +140,23 @@ namespace Genetics
 		public Person ChooseMalePartnerFrom(List<Person> candidates)
 		{
 			if (!IsWoman) throw new Exception("No gayness allowed");
-			
+								
 			Dictionary<ulong, Person> attractivnessKeyedCandidates = GetAttractinessKeyedCandidates(candidates, out ulong maxKey);
 
-			ulong winningPoint = Auxiliaries.GetRandomUlong(maxKey + 1);			
+			ulong winningPoint = Auxiliaries.GetRandomUlong(maxKey + 1);
 
-			var en = candidates.GetEnumerator();
-			en.MoveNext();
-			Person groom = en.Current;
+			Person groom;
 
-			Dictionary<ulong, Person>.Enumerator candidatesEnumerator2 = attractivnessKeyedCandidates.GetEnumerator();
-
-			while (candidatesEnumerator2.MoveNext() && candidatesEnumerator2.Current.Key <= winningPoint)
+			using (var en = attractivnessKeyedCandidates.GetEnumerator())
 			{
-				groom = candidatesEnumerator2.Current.Value;
+				if (en.MoveNext() == false) throw new Exception("Empty goom collection");
+								
+				do
+				{
+					groom = en.Current.Value;
+					if (en.Current.Key > winningPoint)
+						break;
+				} while (en.MoveNext());
 			}
 
 			return groom;

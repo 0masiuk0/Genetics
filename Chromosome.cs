@@ -79,7 +79,7 @@ namespace Genetics
 		{
 			string s = "";
 			foreach (double d in descendancePart)
-				s += $"{d.ToString()}, ";
+				s += $"{d}, ";
 			return s.SkipLast(2).ToString();
 		}
 	}
