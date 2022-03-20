@@ -176,25 +176,22 @@ namespace Genetics
 			candidatesEnumerator.MoveNext();
 			Person candidate = candidatesEnumerator.Current;
 			if (candidate == null) throw new Exception("no groom candidates found");
-			double attractiveness = Person.CalculateMutualAttractionCoefficient(this, candidate);
-			if (attractiveness >= (1 / 10000))
-			{
-				uint attractivenessPercent = (uint)Math.Round(attractiveness * 10000);
-				roulletSectorMarker += attractivenessPercent;
-				attractivnessKeyedCandidates.Add(roulletSectorMarker, candidate);
-			}
+			
+			double attractiveness = Person.CalculateMutualAttractionCoefficient(this, candidate);			
+			uint attractivenessPercent = (uint)Math.Round(attractiveness * 10000);
+			roulletSectorMarker += attractivenessPercent;
+			attractivnessKeyedCandidates.Add(roulletSectorMarker, candidate);
+			
 
 
 			while (candidatesEnumerator.MoveNext())
 			{
 				candidate = candidatesEnumerator.Current;
 				attractiveness = Person.CalculateMutualAttractionCoefficient(this, candidate);
-				if (attractiveness > (1 / 10000))
-				{
-					uint attractivenessPercent = (uint)Math.Round(attractiveness * 10000);
-					roulletSectorMarker += attractivenessPercent;
-					attractivnessKeyedCandidates.Add(roulletSectorMarker, candidate);
-				}
+				attractivenessPercent = (uint)Math.Round(attractiveness * 10000);
+				roulletSectorMarker += attractivenessPercent;
+				attractivnessKeyedCandidates.Add(roulletSectorMarker, candidate);
+				
 			}
 
 			if (roulletSectorMarker == 0) throw new Exception("no groooms found");
@@ -213,12 +210,13 @@ namespace Genetics
 				
 		public double GetRacialPurity()
 		{
-			double stDev = ArrayStatistics.StandardDeviation(GetDescendance());
+			double[] descendance = GetDescendance();
+			double stDev = ArrayStatistics.StandardDeviation(descendance);
 			double racialPurity = stDev * StdDevToPercentCoef;
 			return Math.Max(0, Math.Min(1, racialPurity));
 		}
 
-		static double GetRacialProximity(Person chick, Person dude)
+		public static double GetRacialProximity(Person chick, Person dude)
 		{
 			double[] ChickDescendance = chick.GetDescendance();
 			double[] DudesDescendance = dude.GetDescendance();
