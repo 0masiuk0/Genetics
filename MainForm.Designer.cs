@@ -79,6 +79,16 @@ namespace Genetics
 			this.progressBar10 = new System.Windows.Forms.ProgressBar();
 			this.genProgressBar = new System.Windows.Forms.ProgressBar();
 			this.reproductionProgressBar = new System.Windows.Forms.ProgressBar();
+			this.decileTextBox1 = new System.Windows.Forms.TextBox();
+			this.decileTextBox2 = new System.Windows.Forms.TextBox();
+			this.decileTextBox3 = new System.Windows.Forms.TextBox();
+			this.decileTextBox4 = new System.Windows.Forms.TextBox();
+			this.decileTextBox5 = new System.Windows.Forms.TextBox();
+			this.decileTextBox6 = new System.Windows.Forms.TextBox();
+			this.decileTextBox7 = new System.Windows.Forms.TextBox();
+			this.decileTextBox8 = new System.Windows.Forms.TextBox();
+			this.decileTextBox9 = new System.Windows.Forms.TextBox();
+			this.decileTextBox10 = new System.Windows.Forms.TextBox();
 			this.groupBox2.SuspendLayout();
 			this.groupBox1.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -425,7 +435,7 @@ namespace Genetics
 			this.progressBar1.Location = new System.Drawing.Point(250, 270);
 			this.progressBar1.MarqueeAnimationSpeed = 0;
 			this.progressBar1.Name = "progressBar1";
-			this.progressBar1.Size = new System.Drawing.Size(720, 29);
+			this.progressBar1.Size = new System.Drawing.Size(636, 29);
 			this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
 			this.progressBar1.TabIndex = 6;
 			// 
@@ -434,7 +444,7 @@ namespace Genetics
 			this.progressBar2.Location = new System.Drawing.Point(250, 305);
 			this.progressBar2.MarqueeAnimationSpeed = 0;
 			this.progressBar2.Name = "progressBar2";
-			this.progressBar2.Size = new System.Drawing.Size(720, 29);
+			this.progressBar2.Size = new System.Drawing.Size(636, 29);
 			this.progressBar2.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
 			this.progressBar2.TabIndex = 7;
 			// 
@@ -443,7 +453,7 @@ namespace Genetics
 			this.progressBar3.Location = new System.Drawing.Point(250, 340);
 			this.progressBar3.MarqueeAnimationSpeed = 0;
 			this.progressBar3.Name = "progressBar3";
-			this.progressBar3.Size = new System.Drawing.Size(720, 29);
+			this.progressBar3.Size = new System.Drawing.Size(636, 29);
 			this.progressBar3.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
 			this.progressBar3.TabIndex = 8;
 			// 
@@ -452,7 +462,7 @@ namespace Genetics
 			this.progressBar4.Location = new System.Drawing.Point(250, 445);
 			this.progressBar4.MarqueeAnimationSpeed = 0;
 			this.progressBar4.Name = "progressBar4";
-			this.progressBar4.Size = new System.Drawing.Size(720, 29);
+			this.progressBar4.Size = new System.Drawing.Size(636, 29);
 			this.progressBar4.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
 			this.progressBar4.TabIndex = 11;
 			// 
@@ -461,7 +471,7 @@ namespace Genetics
 			this.progressBar5.Location = new System.Drawing.Point(250, 410);
 			this.progressBar5.MarqueeAnimationSpeed = 0;
 			this.progressBar5.Name = "progressBar5";
-			this.progressBar5.Size = new System.Drawing.Size(720, 29);
+			this.progressBar5.Size = new System.Drawing.Size(636, 29);
 			this.progressBar5.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
 			this.progressBar5.TabIndex = 10;
 			// 
@@ -470,7 +480,7 @@ namespace Genetics
 			this.progressBar6.Location = new System.Drawing.Point(250, 375);
 			this.progressBar6.MarqueeAnimationSpeed = 0;
 			this.progressBar6.Name = "progressBar6";
-			this.progressBar6.Size = new System.Drawing.Size(720, 29);
+			this.progressBar6.Size = new System.Drawing.Size(636, 29);
 			this.progressBar6.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
 			this.progressBar6.TabIndex = 9;
 			// 
@@ -479,7 +489,7 @@ namespace Genetics
 			this.progressBar7.Location = new System.Drawing.Point(250, 480);
 			this.progressBar7.MarqueeAnimationSpeed = 0;
 			this.progressBar7.Name = "progressBar7";
-			this.progressBar7.Size = new System.Drawing.Size(720, 29);
+			this.progressBar7.Size = new System.Drawing.Size(636, 29);
 			this.progressBar7.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
 			this.progressBar7.TabIndex = 12;
 			// 
@@ -513,7 +523,7 @@ namespace Genetics
 			this.progressBar8.Location = new System.Drawing.Point(250, 515);
 			this.progressBar8.MarqueeAnimationSpeed = 0;
 			this.progressBar8.Name = "progressBar8";
-			this.progressBar8.Size = new System.Drawing.Size(720, 29);
+			this.progressBar8.Size = new System.Drawing.Size(636, 29);
 			this.progressBar8.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
 			this.progressBar8.TabIndex = 14;
 			// 
@@ -522,7 +532,7 @@ namespace Genetics
 			this.progressBar9.Location = new System.Drawing.Point(250, 550);
 			this.progressBar9.MarqueeAnimationSpeed = 0;
 			this.progressBar9.Name = "progressBar9";
-			this.progressBar9.Size = new System.Drawing.Size(720, 29);
+			this.progressBar9.Size = new System.Drawing.Size(636, 29);
 			this.progressBar9.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
 			this.progressBar9.TabIndex = 15;
 			// 
@@ -531,7 +541,7 @@ namespace Genetics
 			this.progressBar10.Location = new System.Drawing.Point(250, 588);
 			this.progressBar10.MarqueeAnimationSpeed = 0;
 			this.progressBar10.Name = "progressBar10";
-			this.progressBar10.Size = new System.Drawing.Size(720, 29);
+			this.progressBar10.Size = new System.Drawing.Size(636, 29);
 			this.progressBar10.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
 			this.progressBar10.TabIndex = 16;
 			// 
@@ -549,12 +559,112 @@ namespace Genetics
 			this.reproductionProgressBar.Size = new System.Drawing.Size(438, 30);
 			this.reproductionProgressBar.TabIndex = 18;
 			// 
+			// decileTextBox1
+			// 
+			this.decileTextBox1.Enabled = false;
+			this.decileTextBox1.Location = new System.Drawing.Point(894, 270);
+			this.decileTextBox1.Margin = new System.Windows.Forms.Padding(5);
+			this.decileTextBox1.Name = "decileTextBox1";
+			this.decileTextBox1.Size = new System.Drawing.Size(80, 27);
+			this.decileTextBox1.TabIndex = 19;
+			// 
+			// decileTextBox2
+			// 
+			this.decileTextBox2.Enabled = false;
+			this.decileTextBox2.Location = new System.Drawing.Point(894, 305);
+			this.decileTextBox2.Margin = new System.Windows.Forms.Padding(5);
+			this.decileTextBox2.Name = "decileTextBox2";
+			this.decileTextBox2.Size = new System.Drawing.Size(80, 27);
+			this.decileTextBox2.TabIndex = 20;
+			// 
+			// decileTextBox3
+			// 
+			this.decileTextBox3.Enabled = false;
+			this.decileTextBox3.Location = new System.Drawing.Point(894, 342);
+			this.decileTextBox3.Margin = new System.Windows.Forms.Padding(5);
+			this.decileTextBox3.Name = "decileTextBox3";
+			this.decileTextBox3.Size = new System.Drawing.Size(80, 27);
+			this.decileTextBox3.TabIndex = 21;
+			// 
+			// decileTextBox4
+			// 
+			this.decileTextBox4.Enabled = false;
+			this.decileTextBox4.Location = new System.Drawing.Point(894, 379);
+			this.decileTextBox4.Margin = new System.Windows.Forms.Padding(5);
+			this.decileTextBox4.Name = "decileTextBox4";
+			this.decileTextBox4.Size = new System.Drawing.Size(80, 27);
+			this.decileTextBox4.TabIndex = 22;
+			// 
+			// decileTextBox5
+			// 
+			this.decileTextBox5.Enabled = false;
+			this.decileTextBox5.Location = new System.Drawing.Point(894, 412);
+			this.decileTextBox5.Margin = new System.Windows.Forms.Padding(5);
+			this.decileTextBox5.Name = "decileTextBox5";
+			this.decileTextBox5.Size = new System.Drawing.Size(80, 27);
+			this.decileTextBox5.TabIndex = 23;
+			// 
+			// decileTextBox6
+			// 
+			this.decileTextBox6.Enabled = false;
+			this.decileTextBox6.Location = new System.Drawing.Point(894, 447);
+			this.decileTextBox6.Margin = new System.Windows.Forms.Padding(5);
+			this.decileTextBox6.Name = "decileTextBox6";
+			this.decileTextBox6.Size = new System.Drawing.Size(80, 27);
+			this.decileTextBox6.TabIndex = 24;
+			// 
+			// decileTextBox7
+			// 
+			this.decileTextBox7.Enabled = false;
+			this.decileTextBox7.Location = new System.Drawing.Point(894, 480);
+			this.decileTextBox7.Margin = new System.Windows.Forms.Padding(5);
+			this.decileTextBox7.Name = "decileTextBox7";
+			this.decileTextBox7.Size = new System.Drawing.Size(80, 27);
+			this.decileTextBox7.TabIndex = 25;
+			// 
+			// decileTextBox8
+			// 
+			this.decileTextBox8.Enabled = false;
+			this.decileTextBox8.Location = new System.Drawing.Point(894, 515);
+			this.decileTextBox8.Margin = new System.Windows.Forms.Padding(5);
+			this.decileTextBox8.Name = "decileTextBox8";
+			this.decileTextBox8.Size = new System.Drawing.Size(80, 27);
+			this.decileTextBox8.TabIndex = 26;
+			// 
+			// decileTextBox9
+			// 
+			this.decileTextBox9.Enabled = false;
+			this.decileTextBox9.Location = new System.Drawing.Point(894, 550);
+			this.decileTextBox9.Margin = new System.Windows.Forms.Padding(5);
+			this.decileTextBox9.Name = "decileTextBox9";
+			this.decileTextBox9.Size = new System.Drawing.Size(80, 27);
+			this.decileTextBox9.TabIndex = 27;
+			// 
+			// decileTextBox10
+			// 
+			this.decileTextBox10.Enabled = false;
+			this.decileTextBox10.Location = new System.Drawing.Point(894, 590);
+			this.decileTextBox10.Margin = new System.Windows.Forms.Padding(5);
+			this.decileTextBox10.Name = "decileTextBox10";
+			this.decileTextBox10.Size = new System.Drawing.Size(80, 27);
+			this.decileTextBox10.TabIndex = 28;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoValidate = System.Windows.Forms.AutoValidate.Disable;
 			this.ClientSize = new System.Drawing.Size(982, 666);
+			this.Controls.Add(this.decileTextBox10);
+			this.Controls.Add(this.decileTextBox9);
+			this.Controls.Add(this.decileTextBox8);
+			this.Controls.Add(this.decileTextBox7);
+			this.Controls.Add(this.decileTextBox6);
+			this.Controls.Add(this.decileTextBox5);
+			this.Controls.Add(this.decileTextBox4);
+			this.Controls.Add(this.decileTextBox3);
+			this.Controls.Add(this.decileTextBox2);
+			this.Controls.Add(this.decileTextBox1);
 			this.Controls.Add(this.reproductionProgressBar);
 			this.Controls.Add(this.genProgressBar);
 			this.Controls.Add(this.progressBar10);
@@ -586,6 +696,7 @@ namespace Genetics
 			this.groupBox5.ResumeLayout(false);
 			this.groupBox5.PerformLayout();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
@@ -640,6 +751,16 @@ namespace Genetics
 		private System.Windows.Forms.ProgressBar progressBar10;
 		private System.Windows.Forms.ProgressBar genProgressBar;
 		private System.Windows.Forms.ProgressBar reproductionProgressBar;
+		private System.Windows.Forms.TextBox decileTextBox1;
+		private System.Windows.Forms.TextBox decileTextBox2;
+		private System.Windows.Forms.TextBox decileTextBox3;
+		private System.Windows.Forms.TextBox decileTextBox4;
+		private System.Windows.Forms.TextBox decileTextBox5;
+		private System.Windows.Forms.TextBox decileTextBox6;
+		private System.Windows.Forms.TextBox decileTextBox7;
+		private System.Windows.Forms.TextBox decileTextBox8;
+		private System.Windows.Forms.TextBox decileTextBox9;
+		private System.Windows.Forms.TextBox decileTextBox10;
 	}
 }
 

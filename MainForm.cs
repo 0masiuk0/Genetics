@@ -18,9 +18,15 @@ namespace Genetics
 		public MainForm()
 		{
 			InitializeComponent();
-			decilesProgressBars = new ProgressBar[10]
-			{ progressBar1, progressBar2, progressBar3, progressBar4, progressBar5, progressBar6, progressBar7,
-			 progressBar8, progressBar9, progressBar10};
+			decilesProgressBars = new ProgressBar[10] {
+				progressBar1, progressBar2, progressBar3, progressBar4, progressBar5, 
+				progressBar6, progressBar7,	 progressBar8, progressBar9, progressBar10 
+			};
+
+			decileTextBoxes = new TextBox[10] {
+				decileTextBox1, decileTextBox2, decileTextBox3, decileTextBox4, decileTextBox5,
+				decileTextBox6, decileTextBox7, decileTextBox8, decileTextBox9, decileTextBox10
+			};
 
 			foreach(ProgressBar pb in decilesProgressBars)
 			{
@@ -57,7 +63,8 @@ namespace Genetics
 			populationCountLabel.Text = "0";
 		}
 				
-		readonly ProgressBar[] decilesProgressBars; 
+		readonly ProgressBar[] decilesProgressBars;
+		readonly TextBox[] decileTextBoxes;
 				
 		private void setSeedAndRestButton_Click(object sender, EventArgs e)
 		{
@@ -95,6 +102,7 @@ namespace Genetics
 			for (int i = 0; i < 10; i++)
 			{
 				decilesProgressBars[i].Value = racialPurityDeciles[i];
+				decileTextBoxes[i].Text = $"{racialPurityDeciles[i]}%";
 			}
 
 			raciaPurityImportanceCoefTextBox.Text = Person.RacialPurityImportnace.ToString();

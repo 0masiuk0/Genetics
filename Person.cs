@@ -1,8 +1,6 @@
-﻿using System;
+﻿using MathNet.Numerics.Statistics;
+using System;
 using System.Collections.Generic;
-using System.Collections;
-using System.Threading.Tasks;
-using MathNet.Numerics.Statistics;
 
 namespace Genetics
 {
@@ -106,7 +104,7 @@ namespace Genetics
 			return descendancePartPercent;
 		}
 		
-		public double GetDescendanceOfRace(Race race)
+		public double GetDescendance(Race race)
 		{
 			if (!descCalcDone)
 				CalcDescendance();

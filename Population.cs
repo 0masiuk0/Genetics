@@ -16,6 +16,10 @@ namespace Genetics
 		public long PeopleCount => DudesCount + ChicksCount;
 		public int GenerationNumber { get; private set; }
 		public double GenderRatio { get; private set; }
+		public Person[] People
+		{
+			get { return Chicks.Concat(Dudes).ToArray(); }
+		}
 
 		private Person[] NextGeneration;
 		private long nextGenDudesCount = 0;
@@ -62,6 +66,14 @@ namespace Genetics
 				}
 			}
 
+			AdvanceGeneration();
+		}
+
+		public Population(Person[] people)
+		{
+			NextGeneration = people;
+			nextGenChicksCount = (from p in people where p.IsWoman select p).Count();
+			nextGenDudesCount = people.Count() - nextGenChicksCount;
 			AdvanceGeneration();
 		}
 
