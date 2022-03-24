@@ -106,6 +106,7 @@ namespace Genetics
 			int chosenMommyindex;
 			lock (MommyLock)
 			{
+				//mother index is circled around Chicks array here. "i" is number of baby being delivered, used for progress check.
 				chosenMommyindex = MotherIndex;
 				MotherIndex++;
 				if (MotherIndex == ChicksCount) MotherIndex = 0;
