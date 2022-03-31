@@ -55,12 +55,7 @@ namespace Genetics
 			}
 			chromosomes[0, 0] = IsWoman ? father.chromosomes[0, 0] : father.chromosomes[1, 0];
 
-			bool chosenXChromosome;
-			lock (chromosomeChooserRandomGeneratorLock)
-			{
-				chosenXChromosome = chromosomeChooserRaandomGenerator.Next(0, 2) == 0;
-			}
-			chromosomes[1, 0] = chosenXChromosome ? mother.chromosomes[0, 0] : mother.chromosomes[1, 0];
+			chromosomes[1, 0] = GetRandomGaploidChromosome(mother, 0);
 
 			for (int i = 1; i < 23; i++)
 			{
