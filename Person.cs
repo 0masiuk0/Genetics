@@ -1,6 +1,7 @@
 ﻿using MathNet.Numerics.Statistics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Genetics
 {
@@ -236,8 +237,25 @@ namespace Genetics
 
 			return ChickAttractionToDude * DudeAttractionToChick;
 		}
-		
-	
+
+		public override string ToString()
+		{
+			int[] chromosomeHashes = new int[2 * 23];
+			int i = 0;
+			foreach(Chromosome c in chromosomes)
+			{
+				chromosomeHashes[i] = c.GetHashCode();
+				i++;
+			}
+
+			List<byte> hashBytes = new List<byte>();
+			foreach (int h in chromosomeHashes)
+			{
+				hashBytes.AddRange(BitConverter.GetBytes(h));
+			}
+
+			return BitConverter.ToString(hashBytes.ToArray());
+		}
 
 		readonly static Random randomGeneratorGender = new Random();
 		static readonly object randomGeneratorGenderLock1 = new object();
