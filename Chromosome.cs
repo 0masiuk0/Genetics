@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 
 namespace Genetics
 {
-	//TESTED
+	//TESTED	
 	public class Chromosome
 	{
 		public static double carryoverPercent = 0.05;
 
-		readonly double[] descendancePart = new double[7];
+		double[] descendancePart = new double[7];
 
 		public Chromosome(Race race)
 		{
@@ -73,14 +74,17 @@ namespace Genetics
 		public double GetDescendancePercent(Race race)
 		{
 			return descendancePart[(int)race];
-		}		
+		}
 
-		public override string ToString()
+		public override string ToString()		
 		{
 			string s = "";
 			foreach (double d in descendancePart)
-				s += $"{d}, ";
-			return s.SkipLast(2).ToString();
+				s += d.ToString() + ", ";
+			return s.Substring(0, s.Length- 2);
 		}
+
+	
+		
 	}
 }

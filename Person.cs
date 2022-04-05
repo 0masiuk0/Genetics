@@ -1,6 +1,7 @@
 ﻿using MathNet.Numerics.Statistics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Genetics
 {
@@ -55,12 +56,7 @@ namespace Genetics
 			}
 			chromosomes[0, 0] = IsWoman ? father.chromosomes[0, 0] : father.chromosomes[1, 0];
 
-			bool chosenXChromosome;
-			lock (chromosomeChooserRandomGeneratorLock)
-			{
-				chosenXChromosome = chromosomeChooserRaandomGenerator.Next(0, 2) == 0;
-			}
-			chromosomes[1, 0] = chosenXChromosome ? mother.chromosomes[0, 0] : mother.chromosomes[1, 0];
+			chromosomes[1, 0] = GetRandomGaploidChromosome(mother, 0);
 
 			for (int i = 1; i < 23; i++)
 			{
@@ -241,8 +237,25 @@ namespace Genetics
 
 			return ChickAttractionToDude * DudeAttractionToChick;
 		}
-		
-	
+
+		public override string ToString()
+		{
+			int[] chromosomeHashes = new int[2 * 23];
+			int i = 0;
+			foreach(Chromosome c in chromosomes)
+			{
+				chromosomeHashes[i] = c.GetHashCode();
+				i++;
+			}
+
+			List<byte> hashBytes = new List<byte>();
+			foreach (int h in chromosomeHashes)
+			{
+				hashBytes.AddRange(BitConverter.GetBytes(h));
+			}
+
+			return BitConverter.ToString(hashBytes.ToArray());
+		}
 
 		readonly static Random randomGeneratorGender = new Random();
 		static readonly object randomGeneratorGenderLock1 = new object();
