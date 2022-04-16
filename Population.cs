@@ -202,49 +202,48 @@ namespace Genetics
 		public int[] GetRacialPurityDeciles()
 		{
 
-			double checkSum = 0;
+			//double checkSum = 0;
 
 			int[] racialPurityDeciles = new int[10];
-			double racialPurity;
-			int decile = 0;
-			double decileFloat = 0.1;
+			double racialPurity;			
 
-			for (long i =0; i<ChicksCount; i++)
+			for (long i = 0; i < ChicksCount; i++)
 			{
+				int decile = 0;
+				float decileFloat = 0.1f;
 				racialPurity = Chicks[i].GetRacialPurity();
 				while (decileFloat < racialPurity)
 				{
 					decile++;
-					decileFloat = (double)decile / 10;
+					decileFloat = (decile + 1) / 10.0f;
 				}
 
-				racialPurityDeciles[decile - 1]++;			
+				racialPurityDeciles[decile]++;
 			}
-
-			decile = 0;
-			decileFloat = 0.1;
 
 			for (long i = 0; i < DudesCount; i++)
 			{
+				int decile = 0;
+				float decileFloat = 0.1f;
 				racialPurity = Dudes[i].GetRacialPurity();
 				while (decileFloat < racialPurity)
 				{
 					decile++;
-					decileFloat = (double)decile / 10;
+					decileFloat = (decile + 1) / 10.0f;
 				}
 
-				racialPurityDeciles[decile - 1]++;
+				racialPurityDeciles[decile]++;
 			}
 
 			for (int i =0; i<10; i++)
 			{
 				int n = (int)Math.Round( (double)racialPurityDeciles[i] / ((double)PeopleCount / 100) );
 				racialPurityDeciles[i] = n;
-				checkSum += n; //DEBUG
+				//checkSum += n; //DEBUG
 			}
 
 			//DEBUG
-			if (Math.Abs(checkSum - 100) > 1) throw new Exception("Invalid deciles");
+			//if (Math.Abs(checkSum - 100) > 1) throw new Exception("Invalid deciles");
 
 			return racialPurityDeciles;
 		}
