@@ -91,13 +91,13 @@ namespace Genetics
 			EnableGenerationButtons(true);
 		}
 
-		private void UpdateStats()
+		private async void UpdateStats()
 		{
+			int[] racialPurityDeciles = await Task<int[]>.Run(() => population.GetRacialPurityDeciles());
+
 			populationCountLabel.Text = population.PeopleCount.ToString();
 			generationNumberLabel.Text = population.GenerationNumber.ToString();
-			genProgressBar.Value = reproductionProgressBar.Value = 100;
-
-			int[] racialPurityDeciles = population.GetRacialPurityDeciles();
+			genProgressBar.Value = reproductionProgressBar.Value = 100;					
 
 			for (int i = 0; i < 10; i++)
 			{
@@ -107,7 +107,7 @@ namespace Genetics
 
 			raciaPurityImportanceCoefTextBox.Text = Person.RacialPurityImportnace.ToString();
 		}
-
+				
 		private void UpdateParameters(object sender, EventArgs e)
 		{
 			bool validParameters = true;			
@@ -205,9 +205,25 @@ namespace Genetics
 		private void TheBackgorundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
 			ProgressUpdateTimer.Stop();
-			UpdateStats();
+			foreach(ProgressBar pbn in decilesProgressBars)
+			{
+				pbn.Value = 100;
+				pbn.MarqueeAnimationSpeed = 800;
+				pbn.Style = ProgressBarStyle.Marquee;
+			}
+			
+			this.UpdateStats();
+
+			foreach (ProgressBar pbn in decilesProgressBars)
+			{				
+				pbn.MarqueeAnimationSpeed = 0;
+				pbn.Style = ProgressBarStyle.Continuous;
+			}
+
 			LockSeedParametersButtons(false);
 			EnableGenerationButtons(true);
 		}
+
+		
 	}
 }

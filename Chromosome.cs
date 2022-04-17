@@ -8,7 +8,7 @@ namespace Genetics
 	//TESTED	
 	public class Chromosome
 	{
-		public static double carryoverPercent = 0.05;
+		public static double carryoverPercent = 0.01;
 
 		double[] descendancePart = new double[7];
 

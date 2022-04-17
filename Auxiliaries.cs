@@ -26,5 +26,24 @@ namespace Genetics
 
 			return result % maxValue;
 		}
-    }
+
+		public static double dotProduct(double[] vect_A, double[] vect_B)
+		{
+			int n_a = vect_A.Length;
+			int n_b = vect_B.Length;
+			int n;
+
+			if (n_a == n_b)
+				n = n_a;
+			else
+				throw new Exception("Вектора разной размерности для скалярного умножения");
+
+			double product = 0;
+						
+			for (int i = 0; i < n; i++)
+				product += vect_A[i] * vect_B[i];
+
+			return product;
+		}
+	}
 }

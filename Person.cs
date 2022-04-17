@@ -216,12 +216,14 @@ namespace Genetics
 			double[] DudesDescendance = dude.GetDescendance();
 			double PseudoCorrelation = 0;
 
+			double dotProduct = Auxiliaries.dotProduct(ChickDescendance, DudesDescendance);
+
 			for (int i=0; i < 7; i++)
 			{
 				PseudoCorrelation += Math.Min(ChickDescendance[i], DudesDescendance[i]);
 			}
 
-			return PseudoCorrelation;
+			return dotProduct;
 		}
 
 		public static double CalculateMutualAttractionCoefficient(Person chick, Person dude)

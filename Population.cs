@@ -34,6 +34,7 @@ namespace Genetics
 		public static double racialPurityImportanceDepretiationCoef { get; set; }
 
 		public static Random rnd = new Random();
+		private object populationLock = new object();
 
 		static Population()
 		{
@@ -81,18 +82,23 @@ namespace Genetics
 
 		private void MakeNewGeneration(System.ComponentModel.BackgroundWorker backgroundWorker)
 		{
-			progressReport.reproductionProgress = 0;
-			nextGenerationCount = (int)Math.Ceiling(PeopleCount * BirthRate);
-			NextGeneration = new Person[nextGenerationCount];
-
-			this.backgroundWorker = backgroundWorker;
-			MotherIndex = 0;
-
-			Parallel.For(0, nextGenerationCount, DeliverBaby);
 			
-			AdvanceGeneration();
+			progressReport.reproductionProgress = 0;
 
-			Person.RacialPurityImportnace *= racialPurityImportanceDepretiationCoef;
+			lock (populationLock)
+			{
+				nextGenerationCount = (int)Math.Ceiling(PeopleCount * BirthRate);
+				NextGeneration = new Person[nextGenerationCount];
+
+				this.backgroundWorker = backgroundWorker;
+				MotherIndex = 0;
+
+				Parallel.For(0, nextGenerationCount, DeliverBaby);
+
+				AdvanceGeneration();
+
+				Person.RacialPurityImportnace *= racialPurityImportanceDepretiationCoef;
+			}
 			progressReport.reproductionProgress = 100;
 		}
 
@@ -132,7 +138,7 @@ namespace Genetics
 			
 		}
 
-		public void AdvanceGeneration()
+		private void AdvanceGeneration()
 		{
 			long DudeCounter = 0;
 			long ChickCounter = 0;
@@ -201,49 +207,45 @@ namespace Genetics
 
 		public int[] GetRacialPurityDeciles()
 		{
-
-			//double checkSum = 0;
-
 			int[] racialPurityDeciles = new int[10];
-			double racialPurity;			
+			double racialPurity;
 
-			for (long i = 0; i < ChicksCount; i++)
+			lock (populationLock)
 			{
-				int decile = 0;
-				float decileFloat = 0.1f;
-				racialPurity = Chicks[i].GetRacialPurity();
-				while (decileFloat < racialPurity)
+				for (long i = 0; i < ChicksCount; i++)
 				{
-					decile++;
-					decileFloat = (decile + 1) / 10.0f;
+					int decile = 0;
+					float decileFloat = 0.1f;
+					racialPurity = Chicks[i].GetRacialPurity();
+					while (decileFloat < racialPurity)
+					{
+						decile++;
+						decileFloat = (decile + 1) / 10.0f;
+					}
+
+					racialPurityDeciles[decile]++;
 				}
 
-				racialPurityDeciles[decile]++;
-			}
-
-			for (long i = 0; i < DudesCount; i++)
-			{
-				int decile = 0;
-				float decileFloat = 0.1f;
-				racialPurity = Dudes[i].GetRacialPurity();
-				while (decileFloat < racialPurity)
+				for (long i = 0; i < DudesCount; i++)
 				{
-					decile++;
-					decileFloat = (decile + 1) / 10.0f;
-				}
+					int decile = 0;
+					float decileFloat = 0.1f;
+					racialPurity = Dudes[i].GetRacialPurity();
+					while (decileFloat < racialPurity)
+					{
+						decile++;
+						decileFloat = (decile + 1) / 10.0f;
+					}
 
-				racialPurityDeciles[decile]++;
+					racialPurityDeciles[decile]++;
+				}
 			}
 
 			for (int i =0; i<10; i++)
 			{
 				int n = (int)Math.Round( (double)racialPurityDeciles[i] / ((double)PeopleCount / 100) );
-				racialPurityDeciles[i] = n;
-				//checkSum += n; //DEBUG
+				racialPurityDeciles[i] = n;				
 			}
-
-			//DEBUG
-			//if (Math.Abs(checkSum - 100) > 1) throw new Exception("Invalid deciles");
 
 			return racialPurityDeciles;
 		}
