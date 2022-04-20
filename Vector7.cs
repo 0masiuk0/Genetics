@@ -14,6 +14,8 @@ namespace Genetics
 		protected static readonly Vector7 CentralVector;
 		protected static readonly double AxisToCentralVectorAngle;
 
+		protected const int PRECISION = 5;
+		protected const int ANGULAR_PRECISION = 3;
 		protected const double Pi = MathNet.Numerics.Constants.Pi;
 
 		public double[] Components
@@ -32,7 +34,7 @@ namespace Genetics
 			double[] cvComp = new double[7];
 
 			for (int i = 0; i < 7; i++)
-				cvComp[i] = component;
+				cvComp[i] = Math.Round(component, PRECISION);
 
 			CentralVector = new Vector7(cvComp);
 			AxisToCentralVectorAngle = GetAngle(CentralVector, new Vector7(new double[] {1, 0, 0, 0, 0, 0, 0 }));
@@ -48,13 +50,7 @@ namespace Genetics
 				throw new Exception("incorrect data for 7-vector");
 		}
 
-		public Vector7(IEnumerable<double> components)
-		{
-			if (components.Count() == 7)
-				this._components = components.ToArray();
-			else
-				throw new Exception("incorrect data for 7-vector");
-		}
+		public Vector7(IEnumerable<double> components) => Vector7(components.ToArray());		
 
 		public double ProjectionOnAxisScalar(int a)
 		{
@@ -139,7 +135,8 @@ namespace Genetics
 
 		public static double GetAngle(Vector7 vect_A, Vector7 vect_B)
 		{
-			return Math.Acos(DotProduct(vect_A, vect_B) / (vect_A.Length * vect_B.Length));
+			double angle = Math.Acos(DotProduct(vect_A, vect_B) / (vect_A.Length * vect_B.Length));
+			return Math.Round(angle, ANGULAR_PRECISION);
 		}
 
 		public static Vector7 SumVectors(IEnumerable<Vector7> vectors)
