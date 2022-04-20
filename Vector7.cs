@@ -19,6 +19,9 @@ namespace Genetics
 		protected static readonly double AxisToCentralVectorAngle;
 #endif		
 
+		protected const int PRECISION = 5;
+		protected const int ANGULAR_PRECISION = 3;
+		protected const double Pi = MathNet.Numerics.Constants.Pi;
 		public const double Pi = MathNet.Numerics.Constants.Pi;
 
 		public double[] Components
@@ -37,7 +40,7 @@ namespace Genetics
 			double[] cvComp = new double[7];
 
 			for (int i = 0; i < 7; i++)
-				cvComp[i] = component;
+				cvComp[i] = Math.Round(component, PRECISION);
 
 			CentralVector = new Vector7(cvComp);
 			AxisToCentralVectorAngle = GetAngle(CentralVector, new Vector7(new double[] {1, 0, 0, 0, 0, 0, 0 }));
@@ -53,13 +56,7 @@ namespace Genetics
 				throw new Exception("incorrect data for 7-vector");
 		}
 
-		public Vector7(IEnumerable<double> components)
-		{
-			if (components.Count() == 7)
-				this._components = components.ToArray();
-			else
-				throw new Exception("incorrect data for 7-vector");
-		}
+		public Vector7(IEnumerable<double> components) => Vector7(components.ToArray());		
 
 		public double ProjectionOnAxisScalar(int a)
 		{
@@ -116,6 +113,21 @@ namespace Genetics
 			if (other.GetType() != this.GetType()) return false;
 			return this.Components.SequenceEqual(other.Components);
 		}
+		
+		public override bool Equals(object obj)
+		{
+			if (obj.GetType() != this.GetType()) return false;
+			if (obj is Vector7)
+				return this.Equals(obj as Vector7);
+			else
+				return false;
+		}
+		
+		public bool Equals(Vector7 v, double precision)
+		{
+			Vector7EquilityComparer eqcmp = new Vector7EquilityComparer(precision);
+			return eqcmp.Equals(this, v);
+		}
 
 		public static double DotProduct(Vector7 vect_A, Vector7 vect_B)
 		{
@@ -129,16 +141,7 @@ namespace Genetics
 
 		public static double GetAngle(Vector7 vect_A, Vector7 vect_B)
 		{
-			double cosOfAngle = DotProduct(vect_A, vect_B) / (vect_A.Length * vect_B.Length);
-			if (cosOfAngle >= -1.0 && cosOfAngle <= 1.0)
-				return Math.Acos(cosOfAngle);
-			else
-			{
-				if (Math.Abs(cosOfAngle) - 1.0 > 0.00001)
-					throw new Exception("cos out of [-1,1]");
-				else
-					return Math.Acos(Math.Min(Math.Max(cosOfAngle, -1.0), 1.0));
-			}
+			return Math.Acos(DotProduct(vect_A, vect_B) / (vect_A.Length * vect_B.Length));
 		}
 
 		public static Vector7 SumVectors(IEnumerable<Vector7> vectors)
@@ -159,16 +162,7 @@ namespace Genetics
 		public override int GetHashCode()
 		{
 			return HashCode.Combine(_components);
-		}
-
-		public override bool Equals(object obj)
-		{
-			if (obj.GetType() != this.GetType()) return false;
-			if (obj is Vector7)
-				return this.Equals(obj as Vector7);
-			else
-				return false;
-		}
+		}		
 
 		public static Vector7 operator +(Vector7 v1, Vector7 v2)
 		{
@@ -245,6 +239,35 @@ namespace Genetics
 				return Math.Sqrt(sumSq);
 			}
 		}
+		
+		class Vector7EquilityComparer : IEqualityComparer<Vector7>
+		{
+			double precision = 0.000001;
+			
+			public double Precision
+			{ 
+				get {return precision;}
+				set {precision = value;}
+			}
+			
+			public Vector7EquilityComparer() {}
+			
+			public Vector7EquilityComparer(double precision) {this.precision = precision;}
+			
+			public bool Equals(Vector7 x, Vector7 y)
+    			{				
+				for(int i = 0; i < 7; i++)
+				{
+					if (Math.Abs(x[i] - y[i]) > precision) return false;
+				}
+				reutrn true;
+			}
+			
+			public int GetHashCode(Vector7 v)
+    			{
+				return v.Components.GetHashCode();
+			}
+		}
 	}
 
 	public class UnitVector7 : Vector7
@@ -282,6 +305,11 @@ namespace Genetics
 			double angleFromA = GetAngle(a, b) * turningFraction;
 
 			return new UnitVector7(baseA * Math.Cos(angleFromA) + baseB * Math.Sin(angleFromA));
+		}
+		
+		public static explicit operator UnitVector7(Vector7 v)
+		{
+			return new UnitVector7(v);
 		}
 
 		public static double DotProduct(UnitVector7 vect_A, UnitVector7 vect_B)
