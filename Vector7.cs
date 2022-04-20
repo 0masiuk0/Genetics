@@ -11,10 +11,15 @@ namespace Genetics
 	{
 		protected double[] _components = new double[7];
 
-		protected static readonly Vector7 CentralVector;
+#if DEBUG
+		public static readonly Vector7 CentralVector;
+		public static readonly double AxisToCentralVectorAngle;
+#else	
+		protected static readonly Vector7 CentralVector;    
 		protected static readonly double AxisToCentralVectorAngle;
+#endif		
 
-		protected const double Pi = MathNet.Numerics.Constants.Pi;
+		public const double Pi = MathNet.Numerics.Constants.Pi;
 
 		public double[] Components
 		{
@@ -124,7 +129,16 @@ namespace Genetics
 
 		public static double GetAngle(Vector7 vect_A, Vector7 vect_B)
 		{
-			return Math.Acos(DotProduct(vect_A, vect_B) / (vect_A.Length * vect_B.Length));
+			double cosOfAngle = DotProduct(vect_A, vect_B) / (vect_A.Length * vect_B.Length);
+			if (cosOfAngle >= -1.0 && cosOfAngle <= 1.0)
+				return Math.Acos(cosOfAngle);
+			else
+			{
+				if (Math.Abs(cosOfAngle) - 1.0 > 0.00001)
+					throw new Exception("cos out of [-1,1]");
+				else
+					return Math.Acos(Math.Min(Math.Max(cosOfAngle, -1.0), 1.0));
+			}
 		}
 
 		public static Vector7 SumVectors(IEnumerable<Vector7> vectors)
