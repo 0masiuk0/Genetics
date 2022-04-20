@@ -111,6 +111,21 @@ namespace Genetics
 			if (other.GetType() != this.GetType()) return false;
 			return this.Components.SequenceEqual(other.Components);
 		}
+		
+		public override bool Equals(object obj)
+		{
+			if (obj.GetType() != this.GetType()) return false;
+			if (obj is Vector7)
+				return this.Equals(obj as Vector7);
+			else
+				return false;
+		}
+		
+		public bool Equals(Vecotr7 v, double precision)
+		{
+			Vector7EquilityComparer eqcmp = new Vector7EquilityComparer(precision);
+			return eqcmp.Equals(this, v);
+		}
 
 		public static double DotProduct(Vector7 vect_A, Vector7 vect_B)
 		{
@@ -145,16 +160,7 @@ namespace Genetics
 		public override int GetHashCode()
 		{
 			return HashCode.Combine(_components);
-		}
-
-		public override bool Equals(object obj)
-		{
-			if (obj.GetType() != this.GetType()) return false;
-			if (obj is Vector7)
-				return this.Equals(obj as Vector7);
-			else
-				return false;
-		}
+		}		
 
 		public static Vector7 operator +(Vector7 v1, Vector7 v2)
 		{
@@ -229,6 +235,35 @@ namespace Genetics
 					sumSq += c * c;
 				}
 				return Math.Sqrt(sumSq);
+			}
+		}
+		
+		class Vector7EquilityComparer : IEqualityComparer<Vector7>
+		{
+			double precision = 0.000001;
+			
+			public double Precision
+			{ 
+				get {return precision;}
+				set {precision = value;}
+			}
+			
+			public Vector7EquilityComparer() {}
+			
+			public Vector7EquilityComparer(double precision) {this.precision = precision;}
+			
+			public bool Equals(Vector7 x, Vector7 y)
+    			{				
+				for(int i = 0; i < 7; i++)
+				{
+					if (Math.Abs(x[i] - y[i]) > precision) return false;
+				}
+				reutrn true;
+			}
+			
+			public int GetHashCode(Vector7 v)
+    			{
+				return v.Components.GetHashCode();
 			}
 		}
 	}
