@@ -117,7 +117,7 @@ namespace Genetics
 				return false;
 		}
 		
-		public bool Equals(Vecotr7 v, double precision)
+		public bool Equals(Vector7 v, double precision)
 		{
 			Vector7EquilityComparer eqcmp = new Vector7EquilityComparer(precision);
 			return eqcmp.Equals(this, v);
