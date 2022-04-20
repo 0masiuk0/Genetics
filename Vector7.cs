@@ -269,6 +269,11 @@ namespace Genetics
 
 			return new UnitVector7(baseA * Math.Cos(angleFromA) + baseB * Math.Sin(angleFromA));
 		}
+		
+		public static explicit operator UnitVector7(Vector7 v)
+		{
+			return new UnitVector7(v);
+		}
 
 		public static double DotProduct(UnitVector7 vect_A, UnitVector7 vect_B)
 		{
