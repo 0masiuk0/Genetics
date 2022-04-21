@@ -21,7 +21,6 @@ namespace Genetics
 
 		protected const int PRECISION = 5;
 		protected const int ANGULAR_PRECISION = 3;
-		protected const double Pi = MathNet.Numerics.Constants.Pi;
 		public const double Pi = MathNet.Numerics.Constants.Pi;
 
 		public double[] Components
@@ -51,12 +50,15 @@ namespace Genetics
 		public Vector7(double[] components)
 		{
 			if (components.Length == 7)
-				this._components = components;
+			{
+				_components = (from c in components select Math.Round(c, PRECISION)).ToArray();
+			}
 			else
 				throw new Exception("incorrect data for 7-vector");
 		}
 
-		public Vector7(IEnumerable<double> components) => Vector7(components.ToArray());		
+		public Vector7(IEnumerable<double> components) : this(components.ToArray())
+		{ }
 
 		public double ProjectionOnAxisScalar(int a)
 		{
@@ -68,7 +70,7 @@ namespace Genetics
 			return DotProduct(this, new Vector7(ort));
 		}
 
-		public double AngleToCentralVectorNormalizedTo1()
+		public double GetAngleToCentralVectorNormalizedTo1()
 		{
 			double angleInRadians = GetAngle(this, CentralVector);
 			return angleInRadians / AxisToCentralVectorAngle;
@@ -77,17 +79,6 @@ namespace Genetics
 		public Vector7 ProjectToAnotherVector(Vector7 projectTo)
 		{
 			return (DotProduct(this, projectTo) / DotProduct(projectTo, projectTo)) * projectTo;
-		}
-
-		public bool IsColinear(Vector7 b)
-		{
-			double coef = this.Components[0] / b.Components[0];
-			for (int i = 1; i < 7; i++)
-			{
-				if (Math.Abs(coef - this.Components[i] / b.Components[i]) > 0.000000001)
-					return false;
-			}
-			return true;
 		}
 
 		public UnitVector7 Normalize()
@@ -141,8 +132,47 @@ namespace Genetics
 
 		public static double GetAngle(Vector7 vect_A, Vector7 vect_B)
 		{
-			return Math.Acos(DotProduct(vect_A, vect_B) / (vect_A.Length * vect_B.Length));
+			double cosOfAngle = DotProduct(vect_A, vect_B) / (vect_A.Length * vect_B.Length);
+			cosOfAngle = Math.Round(cosOfAngle, PRECISION);
+			return Math.Acos(cosOfAngle);
 		}
+
+		public static double GetAngleNormalizedTo1(Vector7 a, Vector7 b)
+		{
+			double angle = GetAngle(a, b);
+			return angle / (Pi / 2.0);
+		}
+
+		public static bool IsColinear(params Vector7[] vectors)
+		{
+			List<double[]> vectorCmps = (from cmp in vectors select cmp.Components).ToList();
+			var vectorMatrix = CreateMatrix.DenseOfArray(Auxiliaries.CreateRectangularArray<double>(vectorCmps));
+			return vectorMatrix.Rank() == 1;
+		}
+
+		
+		public static bool IsComplanar(params Vector7[] vectors)
+		{
+			List<double[]> vectorCmps = (from cmp in vectors select cmp.Components).ToList();
+			var vectorMatrix = CreateMatrix.DenseOfArray(Auxiliaries.CreateRectangularArray<double>(vectorCmps));
+			var svd = vectorMatrix.Svd();
+			return svd.S.Count(p => Math.Round(p, PRECISION) == 0.0) <= 2;
+		}
+
+		/*public static bool IsComplanar(Vector7 a, Vector7 b, Vector7 c)
+		{
+			Vector7 projBtoA = b.ProjectToAnotherVector(a);
+			Vector7 normalToAinPlaneAB = b - projBtoA;
+
+			Vector7 projCtoA = c.ProjectToAnotherVector(a);
+			Vector7 normalToAinPlaneAC = c - projBtoA;
+
+			UnitVector7 AB = normalToAinPlaneAB.Normalize();
+			UnitVector7 AC = normalToAinPlaneAC.Normalize();
+
+			return AB.Equals(AC, 0.001);
+		}*/
+		
 
 		public static Vector7 SumVectors(IEnumerable<Vector7> vectors)
 		{
@@ -240,7 +270,7 @@ namespace Genetics
 			}
 		}
 		
-		class Vector7EquilityComparer : IEqualityComparer<Vector7>
+		public class Vector7EquilityComparer : IEqualityComparer<Vector7>
 		{
 			double precision = 0.000001;
 			
@@ -258,9 +288,9 @@ namespace Genetics
     			{				
 				for(int i = 0; i < 7; i++)
 				{
-					if (Math.Abs(x[i] - y[i]) > precision) return false;
+					if (Math.Abs(x.Components[i] - y.Components[i]) > precision) return false;
 				}
-				reutrn true;
+				return true;
 			}
 			
 			public int GetHashCode(Vector7 v)
@@ -276,7 +306,7 @@ namespace Genetics
 		{
 			Vector7 v = new Vector7(components);
 			double vLength = v.Length;
-			var newComponents = from c in new List<double>(v.Components) select c / vLength;
+			var newComponents = from c in new List<double>(v.Components) select Math.Round(c / vLength, Vector7.PRECISION);
 			this._components = newComponents.ToArray();
 		}
 
@@ -295,7 +325,7 @@ namespace Genetics
 		{
 			if (turningFraction < 0 || turningFraction > 1.0) throw new ArgumentOutOfRangeException("turning fraction should be in [0, 1]");
 
-			if (a.IsColinear(b)) return new UnitVector7(a);
+			if (Vector7.IsColinear(a, b)) return new UnitVector7(a);
 
 			Vector7 projBtoA = b.ProjectToAnotherVector(a);
 			Vector7 normalToA = b - projBtoA;
@@ -305,11 +335,6 @@ namespace Genetics
 			double angleFromA = GetAngle(a, b) * turningFraction;
 
 			return new UnitVector7(baseA * Math.Cos(angleFromA) + baseB * Math.Sin(angleFromA));
-		}
-		
-		public static explicit operator UnitVector7(Vector7 v)
-		{
-			return new UnitVector7(v);
 		}
 
 		public static double DotProduct(UnitVector7 vect_A, UnitVector7 vect_B)
