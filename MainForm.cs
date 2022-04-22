@@ -87,8 +87,8 @@ namespace Genetics
 
 			population = new Population(seedPopulation);
 			UpdateStats();
-			LockSeedParametersButtons(true);
-			EnableGenerationButtons(true);
+			SeedParametersTextBoxesEnabled(true);
+			GenerationButtonsEnabled(true);
 		}
 
 		private async void UpdateStats()
@@ -132,7 +132,7 @@ namespace Genetics
 				Person.RacialPurityImportnace = racialPurityImportanceCoef;
 			}
 
-			EnableGenerationButtons(validParameters);
+			GenerationButtonsEnabled(validParameters && !(population is null));
 		}
 
 		private void makeOnGenButton_Click(object sender, EventArgs e)
@@ -155,7 +155,13 @@ namespace Genetics
 			if (!makewNewGenerationsAsyncWorker.IsBusy)
 			{
 				ProgressUpdateTimer.Start();
-				EnableGenerationButtons(false);
+				GenerationButtonsEnabled(CntrStatus.Disabled);
+				SeedParametersTextBoxesEnabled(CntrStatus.Disabled);
+				setSeedAndRestButton.Enabled = false;
+				foreach(ProgressBar pbn in decilesProgressBars)
+				{
+					pbn.ForeColor = Color.Gray;
+				}
 				makewNewGenerationsAsyncWorker.RunWorkerAsync(N);
 			}
 		}
@@ -165,12 +171,12 @@ namespace Genetics
 			if (e.KeyCode == Keys.Enter) UpdateParameters(sender, e);
 		}
 
-		private void EnableGenerationButtons(bool generationAdvancemntAllowed)
+		private void GenerationButtonsEnabled(bool generationAdvancemntAllowed)
 		{
 			makeOneGenButton.Enabled = makeTenGenButton.Enabled = makeHundredGenButton.Enabled = generationAdvancemntAllowed;
 		}
 
-		private void LockSeedParametersButtons(bool changingSeedParamtersAllowed)
+		private void SeedParametersTextBoxesEnabled(bool changingSeedParamtersAllowed)
 		{
 			moiranCountTextBox.Enabled = aidanCountTextBox.Enabled = aivianCountTextBox.Enabled =
 				julianCountTextBox.Enabled = cameliteCountTextBox.Enabled = fekliteCountTextBox.Enabled =
@@ -183,15 +189,21 @@ namespace Genetics
 			population.MakeNewGenerations(genNuber, sender as BackgroundWorker);
 		}
 
+		Population.GenerationsGenerationProgressReport progressReport;
 		private void TheBackgorundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
 		{
+			progressReport = (Population.GenerationsGenerationProgressReport)e.UserState;
 			if (progressUpdateAllowed)
 			{
-				Population.GenerationsGenerationProgressReport report = (Population.GenerationsGenerationProgressReport)e.UserState;
-				genProgressBar.Value = report.generationProgress;
-				reproductionProgressBar.Value = report.reproductionProgress;
-				populationCountLabel.Text = report.peopleCount.ToString();
-				generationNumberLabel.Text = report.generationNumber.ToString();
+				if (progressReport.peopleCount % 3 == 0)
+					UpdateStats();
+				else
+				{
+					genProgressBar.Value = progressReport.generationProgress;
+					reproductionProgressBar.Value = progressReport.reproductionProgress;
+					populationCountLabel.Text = progressReport.peopleCount.ToString();
+					generationNumberLabel.Text = progressReport.generationNumber.ToString();
+				}
 				progressUpdateAllowed = false;
 			}
 		}
@@ -205,25 +217,37 @@ namespace Genetics
 		private void TheBackgorundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
 			ProgressUpdateTimer.Stop();
-			foreach(ProgressBar pbn in decilesProgressBars)
-			{
-				pbn.Value = 100;
-				pbn.MarqueeAnimationSpeed = 800;
+
+			genProgressBar.Value = 100;
+			reproductionProgressBar.Value = 100;
+			populationCountLabel.Text = population.PeopleCount.ToString();
+			generationNumberLabel.Text = population.GenerationNumber.ToString();
+
+			foreach (ProgressBar pbn in decilesProgressBars)
+			{							
 				pbn.Style = ProgressBarStyle.Marquee;
+				pbn.MarqueeAnimationSpeed = 800;
 			}
 			
 			this.UpdateStats();
 
 			foreach (ProgressBar pbn in decilesProgressBars)
-			{				
-				pbn.MarqueeAnimationSpeed = 0;
+			{
 				pbn.Style = ProgressBarStyle.Continuous;
+				pbn.MarqueeAnimationSpeed = 0;
+				pbn.ForeColor = SystemColors.Highlight;
 			}
 
-			LockSeedParametersButtons(false);
-			EnableGenerationButtons(true);
+			SeedParametersTextBoxesEnabled(CntrStatus.Enabled);
+			GenerationButtonsEnabled(CntrStatus.Enabled);
+			setSeedAndRestButton.Enabled = true;
 		}
 
-		
+		public static class CntrStatus
+		{
+			public const bool Enabled = true;
+			public const bool Disabled = false;
+		}
+
 	}
 }

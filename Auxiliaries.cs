@@ -47,6 +47,19 @@ namespace Genetics
 			}
 			return ret;
 		}
+
+		public static T[] Flatten2DArray<T>(T[,] input)
+		{
+			int n = input.GetLength(0);
+			int m = input.GetLength(1);
+			T[] output = new T[input.Length];
+
+			for(int i = 0; i < n; i++)
+				for(int j = 0; j < m; j++)
+					output[m * i + j] = input[i, j];
+
+			return output;
+		}
 	}
 
 

@@ -1,6 +1,7 @@
 ﻿using MathNet.Numerics.Statistics;
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 
 namespace Genetics
@@ -22,9 +23,7 @@ namespace Genetics
 					_racialPurityImportance = value;
 			}
 		}
-				
-		static readonly double StdDevToPercentCoef = 1 / ArrayStatistics.StandardDeviation(new int[7] { 0, 0, 0, 0, 0, 0, 1 });
-
+		
 		public bool IsWoman { get; private set; }
 
 		//DEBUG access modificator public, release shall be "protected"
@@ -89,38 +88,53 @@ namespace Genetics
 			
 		}
 
+		UnitVector7 personDescendance;
 		bool descCalcDone = false;
-		double[] descendancePartPercent = new double[7];
-
-		public double[] GetDescendance()
+		public UnitVector7 GetPersonDescendance()
 		{
 			if (!descCalcDone)
+			{
 				CalcDescendance();
-			descCalcDone = true;
-			return descendancePartPercent;
-		}
-		
-		public double GetDescendance(Race race)
-		{
-			if (!descCalcDone)
-				CalcDescendance();
-			descCalcDone = true;
-			return descendancePartPercent[(int)race];
+				descCalcDone = true;
+			}
+			return personDescendance;
 		}
 
 		private void CalcDescendance()
 		{
-			foreach (Chromosome ch in chromosomes)
-			{
-				foreach (Race r in possibleRaces)
-				{
-					descendancePartPercent[(int)r] += ch.GetDescendancePercent(r);
-				}				
-			}
+			var chromosomes1d = Auxiliaries.Flatten2DArray(chromosomes);
+			var descCollection = from c in chromosomes1d select c.Descendance;
+			var personDesc = Vector7.SumVectors(descCollection);
+			personDescendance = new UnitVector7(personDesc);
+		}
 
+		bool descProjCalcDone = false;
+		double[] descendanceProjections = new double[7];
+
+		public double[] GetDescendanceProjections()
+		{
+			if (!descProjCalcDone)
+			{
+				CalcDescendanceProjections();
+				descProjCalcDone = true;
+			}
+			return descendanceProjections;
+		}
+		
+		public double GetDescendanceProjection(Race race)
+		{
+			if (!descProjCalcDone)
+				CalcDescendanceProjections();
+			descProjCalcDone = true;
+			return descendanceProjections[(int)race];
+		}
+
+		private void CalcDescendanceProjections()
+		{
+			double[] proj = new double[7];
 			for (int i = 0; i < 7; i++)
 			{
-				descendancePartPercent[i] /= 46;
+				proj[i] = GetPersonDescendance().ProjectionOnAxisScalar(i);
 			}
 		}
 
@@ -167,28 +181,20 @@ namespace Genetics
 			List<Person>.Enumerator candidatesEnumerator = candidates.GetEnumerator();
 
 			roulletSectorMarker = 0;
-			candidatesEnumerator.MoveNext();
-			Person candidate = candidatesEnumerator.Current;
-			if (candidate == null) throw new Exception("no groom candidates found");
-			
-			double attractiveness = Person.CalculateMutualAttractionCoefficient(this, candidate);			
-			uint attractivenessPercent = (uint)Math.Round(attractiveness * 10000);
-			roulletSectorMarker += attractivenessPercent;
-			attractivnessKeyedCandidates.Add(roulletSectorMarker, candidate);
-			
-
-
-			while (candidatesEnumerator.MoveNext())
+			if (! candidatesEnumerator.MoveNext()) throw new Exception("no groom candidates found");
+			do
 			{
-				candidate = candidatesEnumerator.Current;
-				attractiveness = Person.CalculateMutualAttractionCoefficient(this, candidate);
-				attractivenessPercent = (uint)Math.Round(attractiveness * 10000);
-				roulletSectorMarker += attractivenessPercent;
-				attractivnessKeyedCandidates.Add(roulletSectorMarker, candidate);
+				Person candidate = candidatesEnumerator.Current;
+				double attractiveness = Person.CalculateMutualAttractionCoefficient(this, candidate);
+				uint attractivenessPercent = (uint)Math.Round(attractiveness * 10000);
 				
-			}
-
-			if (roulletSectorMarker == 0) throw new Exception("no groooms found");
+				if (attractivenessPercent > 0)
+				{
+					roulletSectorMarker += attractivenessPercent;
+					attractivnessKeyedCandidates.Add(roulletSectorMarker, candidate);
+				}
+			}while (candidatesEnumerator.MoveNext());			
+						
 
 			lastKey = roulletSectorMarker;
 
@@ -204,24 +210,12 @@ namespace Genetics
 				
 		public double GetRacialPurity()
 		{
-			double[] descendance = GetDescendance();
-			double stDev = ArrayStatistics.StandardDeviation(descendance);
-			double racialPurity = stDev * StdDevToPercentCoef;
-			return Math.Max(0, Math.Min(1, racialPurity));
+			return GetPersonDescendance().GetAngleToCentralVectorNormalizedTo1();
 		}
 
 		public static double GetRacialProximity(Person chick, Person dude)
 		{
-			double[] ChickDescendance = chick.GetDescendance();
-			double[] DudesDescendance = dude.GetDescendance();
-			double PseudoCorrelation = 0;
-
-			for (int i=0; i < 7; i++)
-			{
-				PseudoCorrelation += Math.Min(ChickDescendance[i], DudesDescendance[i]);
-			}
-
-			return PseudoCorrelation;
+			return Vector7.GetAngleNormalizedTo1(chick.GetPersonDescendance(), dude.GetPersonDescendance());
 		}
 
 		public static double CalculateMutualAttractionCoefficient(Person chick, Person dude)

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using MathNet.Numerics.Statistics;
 
 namespace Genetics
 {
@@ -15,11 +15,7 @@ namespace Genetics
 		public long ChicksCount { get; private set; }
 		public long PeopleCount => DudesCount + ChicksCount;
 		public int GenerationNumber { get; private set; }
-		public double GenderRatio { get; private set; }
-		public Person[] People
-		{
-			get { return Chicks.Concat(Dudes).ToArray(); }
-		}
+		public double GenderRatio { get; private set; }		
 
 		private Person[] NextGeneration;
 		private long nextGenDudesCount = 0;
@@ -84,6 +80,7 @@ namespace Genetics
 		{
 			
 			progressReport.reproductionProgress = 0;
+			thisGenerationBirthProgress = 0;
 
 			lock (populationLock)
 			{
@@ -92,8 +89,12 @@ namespace Genetics
 
 				this.backgroundWorker = backgroundWorker;
 				MotherIndex = 0;
-
+#if DEBUG
+				for (int i = 0; i < nextGenerationCount; i++)
+					DeliverBaby(i);
+#else
 				Parallel.For(0, nextGenerationCount, DeliverBaby);
+#endif
 
 				AdvanceGeneration();
 
@@ -103,6 +104,7 @@ namespace Genetics
 		}
 
 		int MotherIndex = 0;
+		int thisGenerationBirthProgress;
 		readonly object MommyLock = new object();
 		readonly object CounterLock = new object();
 		System.ComponentModel.BackgroundWorker backgroundWorker;
@@ -116,6 +118,7 @@ namespace Genetics
 				chosenMommyindex = MotherIndex;
 				MotherIndex++;
 				if (MotherIndex == ChicksCount) MotherIndex = 0;
+				thisGenerationBirthProgress++;
 			}
 			Person mommy = Chicks[chosenMommyindex];
 			List<Person> daddyCandidates = ChooseMalePartnerCandidatesFor(chosenMommyindex);
@@ -128,9 +131,9 @@ namespace Genetics
 				if (NextGeneration[i].IsWoman) nextGenChicksCount++; else nextGenDudesCount++;				
 			}
 
-			progress = (int)Math.Round((i + 1) / ((double)nextGenerationCount / 100));
+			progress = (int)Math.Round((thisGenerationBirthProgress + 1) / (nextGenerationCount / 100.0));
 
-			if (progressReport.reproductionProgress < progress)
+			if (progressReport.reproductionProgress < progress || progressReport.generationNumber != this.GenerationNumber)
 			{
 				progressReport.reproductionProgress = progress;
 				backgroundWorker.ReportProgress(progressReport.generationProgress, progressReport);
@@ -208,43 +211,20 @@ namespace Genetics
 		public int[] GetRacialPurityDeciles()
 		{
 			int[] racialPurityDeciles = new int[10];
-			double racialPurity;
+			IEnumerable<double> racialPurities;
+			Histogram racialPurityHistogram;
 
 			lock (populationLock)
 			{
-				for (long i = 0; i < ChicksCount; i++)
-				{
-					int decile = 0;
-					float decileFloat = 0.1f;
-					racialPurity = Chicks[i].GetRacialPurity();
-					while (decileFloat < racialPurity)
-					{
-						decile++;
-						decileFloat = (decile + 1) / 10.0f;
-					}
-
-					racialPurityDeciles[decile]++;
-				}
-
-				for (long i = 0; i < DudesCount; i++)
-				{
-					int decile = 0;
-					float decileFloat = 0.1f;
-					racialPurity = Dudes[i].GetRacialPurity();
-					while (decileFloat < racialPurity)
-					{
-						decile++;
-						decileFloat = (decile + 1) / 10.0f;
-					}
-
-					racialPurityDeciles[decile]++;
-				}
+				racialPurities = from person in Chicks.Concat(Dudes) select person.GetRacialPurity();
+				racialPurityHistogram = new Histogram(racialPurities, 10);
 			}
 
-			for (int i =0; i<10; i++)
+			int personCount = (int)racialPurityHistogram.DataCount;
+
+			for (int i = 0; i < 10; i++)
 			{
-				int n = (int)Math.Round( (double)racialPurityDeciles[i] / ((double)PeopleCount / 100) );
-				racialPurityDeciles[i] = n;				
+				racialPurityDeciles[i] = 100 * (int)racialPurityHistogram[i].Count / personCount;
 			}
 
 			return racialPurityDeciles;

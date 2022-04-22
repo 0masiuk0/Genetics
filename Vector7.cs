@@ -134,6 +134,15 @@ namespace Genetics
 		{
 			double cosOfAngle = DotProduct(vect_A, vect_B) / (vect_A.Length * vect_B.Length);
 			cosOfAngle = Math.Round(cosOfAngle, PRECISION);
+			double absoluteCos = Math.Abs(cosOfAngle);
+			if (absoluteCos > 1.01) throw new Exception("cosOfAngle > 1");
+			if (absoluteCos > 0.98)
+				cosOfAngle = Math.Sign(cosOfAngle);
+			else 
+			if (absoluteCos < 0.01)
+				cosOfAngle = 0;
+			else
+				cosOfAngle = Math.Min(1.0, Math.Max(-1.0, cosOfAngle));
 			return Math.Acos(cosOfAngle);
 		}
 
@@ -158,21 +167,6 @@ namespace Genetics
 			var svd = vectorMatrix.Svd();
 			return svd.S.Count(p => Math.Round(p, PRECISION) == 0.0) <= 2;
 		}
-
-		/*public static bool IsComplanar(Vector7 a, Vector7 b, Vector7 c)
-		{
-			Vector7 projBtoA = b.ProjectToAnotherVector(a);
-			Vector7 normalToAinPlaneAB = b - projBtoA;
-
-			Vector7 projCtoA = c.ProjectToAnotherVector(a);
-			Vector7 normalToAinPlaneAC = c - projBtoA;
-
-			UnitVector7 AB = normalToAinPlaneAB.Normalize();
-			UnitVector7 AC = normalToAinPlaneAC.Normalize();
-
-			return AB.Equals(AC, 0.001);
-		}*/
-		
 
 		public static Vector7 SumVectors(IEnumerable<Vector7> vectors)
 		{
@@ -320,7 +314,17 @@ namespace Genetics
 
 			this._components[i] = 1.0;
 		}
-		
+
+		public new UnitVector7 Copy()
+		{
+			return new UnitVector7(this._components);
+		}
+
+		public static UnitVector7 Copy(Vector7 copyOrigin)
+		{
+			return new UnitVector7(copyOrigin);
+		}
+
 		public static UnitVector7 TurnAtoBandNormalize(Vector7 a, Vector7 b, double turningFraction)
 		{
 			if (turningFraction < 0 || turningFraction > 1.0) throw new ArgumentOutOfRangeException("turning fraction should be in [0, 1]");
@@ -336,6 +340,7 @@ namespace Genetics
 
 			return new UnitVector7(baseA * Math.Cos(angleFromA) + baseB * Math.Sin(angleFromA));
 		}
+
 
 		public static double DotProduct(UnitVector7 vect_A, UnitVector7 vect_B)
 		{
