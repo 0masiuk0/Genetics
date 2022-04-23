@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace Genetics
 {
@@ -59,6 +60,18 @@ namespace Genetics
 					output[m * i + j] = input[i, j];
 
 			return output;
+		}
+
+		static Random rnd2 = new Random();
+		static object rndLock2 = new object();
+
+		public static T2 RandomChoice<T2>(IList<T2> collection)
+		{
+			lock(rndLock2)
+			{
+				int choice = rnd2.Next(collection.Count);
+				return collection[choice];
+			}
 		}
 	}
 

@@ -62,6 +62,10 @@ namespace Genetics
 				chromosomes[0, i] = GetRandomGaploidChromosome(father, i);
 				chromosomes[1, i] = GetRandomGaploidChromosome(mother, i);
 			}
+
+#if DEBUG
+			double p = GetRacialPurity();
+#endif
 		}			
 
 		//unit tests mock geeration constructor
@@ -108,6 +112,7 @@ namespace Genetics
 			personDescendance = new UnitVector7(personDesc);
 		}
 
+		/*
 		bool descProjCalcDone = false;
 		double[] descendanceProjections = new double[7];
 
@@ -130,13 +135,12 @@ namespace Genetics
 		}
 
 		private void CalcDescendanceProjections()
-		{
-			double[] proj = new double[7];
+		{			
 			for (int i = 0; i < 7; i++)
 			{
-				proj[i] = GetPersonDescendance().ProjectionOnAxisScalar(i);
+				descendanceProjections[i] = GetPersonDescendance().ProjectionOnAxisScalar(i);
 			}
-		}
+		}*/
 
 		void GenPureRace(Race race)
 		{
@@ -157,7 +161,7 @@ namespace Genetics
 
 			using (var en = attractivnessKeyedCandidates.GetEnumerator())
 			{
-				if (en.MoveNext() == false) throw new Exception("Empty goom collection");
+				if (en.MoveNext() == false) return Auxiliaries.RandomChoice(candidates);
 								
 				do
 				{
@@ -166,6 +170,22 @@ namespace Genetics
 						break;
 				} while (en.MoveNext());
 			}
+
+#if DEBUG
+			var expectedAttractivenessWeights = new Dictionary<Person, ulong>();
+
+			ulong prevAttractiveness = 0;
+
+			//------------------------Expected-----------------------------			
+			foreach (KeyValuePair<ulong, Person> s in attractivnessKeyedCandidates)
+			{
+				ulong x = s.Key;
+				expectedAttractivenessWeights.Add(s.Value, x - prevAttractiveness);
+				prevAttractiveness = x;
+			}
+
+			bool c = expectedAttractivenessWeights[groom] < 100;
+#endif
 
 			return groom;
 		}
@@ -234,21 +254,10 @@ namespace Genetics
 
 		public override string ToString()
 		{
-			int[] chromosomeHashes = new int[2 * 23];
-			int i = 0;
-			foreach(Chromosome c in chromosomes)
-			{
-				chromosomeHashes[i] = c.GetHashCode();
-				i++;
-			}
-
-			List<byte> hashBytes = new List<byte>();
-			foreach (int h in chromosomeHashes)
-			{
-				hashBytes.AddRange(BitConverter.GetBytes(h));
-			}
-
-			return BitConverter.ToString(hashBytes.ToArray());
+			string s = "";
+			foreach (double d in GetPersonDescendance().Components)
+				s += d.ToString() + ", ";
+			return s.Substring(0, s.Length - 2);
 		}
 
 		readonly static Random randomGeneratorGender = new Random();

@@ -149,7 +149,7 @@ namespace Genetics
 		public static double GetAngleNormalizedTo1(Vector7 a, Vector7 b)
 		{
 			double angle = GetAngle(a, b);
-			return angle / (Pi / 2.0);
+			return 1 - Math.Round(angle / (Pi / 2.0), 5);
 		}
 
 		public static bool IsColinear(params Vector7[] vectors)

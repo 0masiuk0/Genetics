@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define ParallelComputation
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,7 +38,7 @@ namespace Genetics
 		{
 			BirthRate = 1.1;
 			GroomSearchRadius = 250;
-			GroomCount = 30;
+			GroomCount = 50;
 			racialPurityImportanceDepretiationCoef = 1;
 		}
 				
@@ -89,11 +91,13 @@ namespace Genetics
 
 				this.backgroundWorker = backgroundWorker;
 				MotherIndex = 0;
-#if DEBUG
+
+#if ParallelComputation
+				Parallel.For(0, nextGenerationCount, DeliverBaby);
+#else
 				for (int i = 0; i < nextGenerationCount; i++)
 					DeliverBaby(i);
-#else
-				Parallel.For(0, nextGenerationCount, DeliverBaby);
+				
 #endif
 
 				AdvanceGeneration();
@@ -131,7 +135,7 @@ namespace Genetics
 				if (NextGeneration[i].IsWoman) nextGenChicksCount++; else nextGenDudesCount++;				
 			}
 
-			progress = (int)Math.Round((thisGenerationBirthProgress + 1) / (nextGenerationCount / 100.0));
+			progress = (int)Math.Round((thisGenerationBirthProgress) / (nextGenerationCount / 100.0));
 
 			if (progressReport.reproductionProgress < progress || progressReport.generationNumber != this.GenerationNumber)
 			{
@@ -207,25 +211,25 @@ namespace Genetics
 				backWrkr.ReportProgress(progressReport.generationProgress, progressReport);
 			}
 		}
-
-		public int[] GetRacialPurityDeciles()
+				
+		public int[] GetRacialPurityDeciles(out long personCount)
 		{
 			int[] racialPurityDeciles = new int[10];
 			IEnumerable<double> racialPurities;
 			Histogram racialPurityHistogram;
-
+							
 			lock (populationLock)
 			{
 				racialPurities = from person in Chicks.Concat(Dudes) select person.GetRacialPurity();
-				racialPurityHistogram = new Histogram(racialPurities, 10);
-			}
+				racialPurityHistogram = new Histogram(racialPurities, 10, 0.0, 1.0);
 
-			int personCount = (int)racialPurityHistogram.DataCount;
+				personCount = PeopleCount;
 
-			for (int i = 0; i < 10; i++)
-			{
-				racialPurityDeciles[i] = 100 * (int)racialPurityHistogram[i].Count / personCount;
-			}
+				for (int i = 0; i < 10; i++)
+				{
+					racialPurityDeciles[i] = (int)racialPurityHistogram[i].Count;
+				}
+			}				
 
 			return racialPurityDeciles;
 		}
@@ -244,6 +248,14 @@ namespace Genetics
 				this.reproductionProgress = reproductionProgress;
 				this.generationNumber = generationNumber;
 				this.peopleCount = peopleCount;
+			}
+
+			public GenerationsGenerationProgressReport(Population pop)
+			{
+				this.generationProgress = 0;
+				this.reproductionProgress = 0;
+				this.generationNumber = pop.GenerationNumber;
+				this.peopleCount = pop.PeopleCount;
 			}
 		}
 	}

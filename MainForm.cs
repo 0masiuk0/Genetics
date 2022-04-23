@@ -86,27 +86,11 @@ namespace Genetics
 			}
 
 			population = new Population(seedPopulation);
-			UpdateStats();
+			progressReport = new Population.GenerationsGenerationProgressReport(population);
+			UpdateProgressAndDeciles();
 			SeedParametersTextBoxesEnabled(true);
-			GenerationButtonsEnabled(true);
-		}
-
-		private async void UpdateStats()
-		{
-			int[] racialPurityDeciles = await Task<int[]>.Run(() => population.GetRacialPurityDeciles());
-
-			populationCountLabel.Text = population.PeopleCount.ToString();
-			generationNumberLabel.Text = population.GenerationNumber.ToString();
-			genProgressBar.Value = reproductionProgressBar.Value = 100;					
-
-			for (int i = 0; i < 10; i++)
-			{
-				decilesProgressBars[i].Value = racialPurityDeciles[i];
-				decileTextBoxes[i].Text = $"{racialPurityDeciles[i]}%";
-			}
-
-			raciaPurityImportanceCoefTextBox.Text = Person.RacialPurityImportnace.ToString();
-		}
+			GenerationButtonsEnabled(true);			
+		}		
 				
 		private void UpdateParameters(object sender, EventArgs e)
 		{
@@ -157,11 +141,7 @@ namespace Genetics
 				ProgressUpdateTimer.Start();
 				GenerationButtonsEnabled(CntrStatus.Disabled);
 				SeedParametersTextBoxesEnabled(CntrStatus.Disabled);
-				setSeedAndRestButton.Enabled = false;
-				foreach(ProgressBar pbn in decilesProgressBars)
-				{
-					pbn.ForeColor = Color.Gray;
-				}
+				setSeedAndRestButton.Enabled = false;				
 				makewNewGenerationsAsyncWorker.RunWorkerAsync(N);
 			}
 		}
@@ -185,27 +165,77 @@ namespace Genetics
 
 		private void TheBackgorundWorker_DoWork(object sender, DoWorkEventArgs e)
 		{
-			int genNuber = (int)e.Argument;			
-			population.MakeNewGenerations(genNuber, sender as BackgroundWorker);
+			int genNumber = (int)e.Argument;			
+			population.MakeNewGenerations(genNumber, sender as BackgroundWorker);
 		}
 
 		Population.GenerationsGenerationProgressReport progressReport;
+		object decileCalcualtionLock = new object();
+		int lastGenerationNumberForWhichDecilesWereCalculated = -1;
 		private void TheBackgorundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
 		{
 			progressReport = (Population.GenerationsGenerationProgressReport)e.UserState;
 			if (progressUpdateAllowed)
 			{
-				if (progressReport.peopleCount % 3 == 0)
-					UpdateStats();
+				if (progressReport.generationNumber % 3 == 0 && progressReport.generationNumber != lastGenerationNumberForWhichDecilesWereCalculated)
+				{
+					bool lockWasTaken = false;
+					try
+					{
+						System.Threading.Monitor.Enter(decileCalcualtionLock, ref lockWasTaken);
+						if (lockWasTaken)
+						{
+							UpdateProgressAndDeciles();
+							lastGenerationNumberForWhichDecilesWereCalculated = progressReport.generationNumber;
+						}
+						else
+							UpdateProgressIndicatorsAndLabels();
+					}
+					finally
+					{
+						if (lockWasTaken) System.Threading.Monitor.Exit(decileCalcualtionLock);
+					}
+				}
 				else
 				{
-					genProgressBar.Value = progressReport.generationProgress;
-					reproductionProgressBar.Value = progressReport.reproductionProgress;
-					populationCountLabel.Text = progressReport.peopleCount.ToString();
-					generationNumberLabel.Text = progressReport.generationNumber.ToString();
+					UpdateProgressIndicatorsAndLabels();
 				}
 				progressUpdateAllowed = false;
+			}			
+		}
+
+		private async void UpdateProgressAndDeciles()
+		{
+			foreach (ProgressBar pbn in decilesProgressBars)
+			{
+				pbn.ForeColor = Color.Gray;
 			}
+
+			long peopleCount = 0;
+			int[] racialPurityDeciles = await Task<int[]>.Run(() => population.GetRacialPurityDeciles(out peopleCount));					
+
+			for (int i = 0; i < 10; i++)
+			{
+				decilesProgressBars[i].Value = (int)Math.Round(racialPurityDeciles[i] / (peopleCount / 100.0));
+				decileTextBoxes[i].Text = racialPurityDeciles[i].ToString("### ###", System.Globalization.CultureInfo.InvariantCulture);
+			}
+
+			foreach (ProgressBar pbn in decilesProgressBars)
+			{
+				pbn.ForeColor = Color.LightGreen;
+			}
+			
+
+			UpdateProgressIndicatorsAndLabels();
+		}
+
+		void UpdateProgressIndicatorsAndLabels()
+		{
+			genProgressBar.Value = progressReport.generationProgress;
+			reproductionProgressBar.Value = progressReport.reproductionProgress;
+			populationCountLabel.Text = progressReport.peopleCount.ToString();
+			generationNumberLabel.Text = progressReport.generationNumber.ToString();
+			raciaPurityImportanceCoefTextBox.Text = Person.RacialPurityImportnace.ToString();
 		}
 
 		bool progressUpdateAllowed = true;
@@ -221,26 +251,15 @@ namespace Genetics
 			genProgressBar.Value = 100;
 			reproductionProgressBar.Value = 100;
 			populationCountLabel.Text = population.PeopleCount.ToString();
-			generationNumberLabel.Text = population.GenerationNumber.ToString();
-
-			foreach (ProgressBar pbn in decilesProgressBars)
-			{							
-				pbn.Style = ProgressBarStyle.Marquee;
-				pbn.MarqueeAnimationSpeed = 800;
-			}
+			generationNumberLabel.Text = population.GenerationNumber.ToString();				
 			
-			this.UpdateStats();
-
-			foreach (ProgressBar pbn in decilesProgressBars)
-			{
-				pbn.Style = ProgressBarStyle.Continuous;
-				pbn.MarqueeAnimationSpeed = 0;
-				pbn.ForeColor = SystemColors.Highlight;
-			}
+			this.UpdateProgressAndDeciles();			
 
 			SeedParametersTextBoxesEnabled(CntrStatus.Enabled);
 			GenerationButtonsEnabled(CntrStatus.Enabled);
 			setSeedAndRestButton.Enabled = true;
+
+			lastGenerationNumberForWhichDecilesWereCalculated = -1;
 		}
 
 		public static class CntrStatus
