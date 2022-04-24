@@ -233,8 +233,8 @@ namespace Genetics
 		{
 			genProgressBar.Value = progressReport.generationProgress;
 			reproductionProgressBar.Value = progressReport.reproductionProgress;
-			populationCountLabel.Text = progressReport.peopleCount.ToString();
-			generationNumberLabel.Text = progressReport.generationNumber.ToString();
+			populationCountLabel.Text = population.PeopleCount.ToString();
+			generationNumberLabel.Text = population.GenerationNumber.ToString();
 			raciaPurityImportanceCoefTextBox.Text = Person.RacialPurityImportnace.ToString();
 		}
 
