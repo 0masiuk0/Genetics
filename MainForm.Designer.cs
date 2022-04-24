@@ -65,18 +65,18 @@ namespace Genetics
 			this.makeOneGenButton = new System.Windows.Forms.Button();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
 			this.populationCountLabel = new System.Windows.Forms.Label();
-			this.progressBar1 = new NewProgressBar();
-			this.progressBar2 = new NewProgressBar();
-			this.progressBar3 = new NewProgressBar();
-			this.progressBar4 = new NewProgressBar();
-			this.progressBar5 = new NewProgressBar();
-			this.progressBar6 = new NewProgressBar();
-			this.progressBar7 = new NewProgressBar();
+			this.progressBar1 = new Genetics.NewProgressBar();
+			this.progressBar2 = new Genetics.NewProgressBar();
+			this.progressBar3 = new Genetics.NewProgressBar();
+			this.progressBar4 = new Genetics.NewProgressBar();
+			this.progressBar5 = new Genetics.NewProgressBar();
+			this.progressBar6 = new Genetics.NewProgressBar();
+			this.progressBar7 = new Genetics.NewProgressBar();
 			this.groupBox5 = new System.Windows.Forms.GroupBox();
 			this.generationNumberLabel = new System.Windows.Forms.Label();
-			this.progressBar8 = new NewProgressBar(); 
-			this.progressBar9 = new NewProgressBar();
-			this.progressBar10 = new NewProgressBar();
+			this.progressBar8 = new Genetics.NewProgressBar();
+			this.progressBar9 = new Genetics.NewProgressBar();
+			this.progressBar10 = new Genetics.NewProgressBar();
 			this.genProgressBar = new System.Windows.Forms.ProgressBar();
 			this.reproductionProgressBar = new System.Windows.Forms.ProgressBar();
 			this.decileTextBox1 = new System.Windows.Forms.TextBox();
@@ -450,7 +450,7 @@ namespace Genetics
 			// 
 			// progressBar3
 			// 
-			this.progressBar3.Location = new System.Drawing.Point(250, 340);
+			this.progressBar3.Location = new System.Drawing.Point(250, 342);
 			this.progressBar3.MarqueeAnimationSpeed = 0;
 			this.progressBar3.Name = "progressBar3";
 			this.progressBar3.Size = new System.Drawing.Size(636, 29);
@@ -459,7 +459,7 @@ namespace Genetics
 			// 
 			// progressBar4
 			// 
-			this.progressBar4.Location = new System.Drawing.Point(250, 445);
+			this.progressBar4.Location = new System.Drawing.Point(250, 377);
 			this.progressBar4.MarqueeAnimationSpeed = 0;
 			this.progressBar4.Name = "progressBar4";
 			this.progressBar4.Size = new System.Drawing.Size(636, 29);
@@ -468,7 +468,7 @@ namespace Genetics
 			// 
 			// progressBar5
 			// 
-			this.progressBar5.Location = new System.Drawing.Point(250, 410);
+			this.progressBar5.Location = new System.Drawing.Point(250, 411);
 			this.progressBar5.MarqueeAnimationSpeed = 0;
 			this.progressBar5.Name = "progressBar5";
 			this.progressBar5.Size = new System.Drawing.Size(636, 29);
@@ -477,7 +477,7 @@ namespace Genetics
 			// 
 			// progressBar6
 			// 
-			this.progressBar6.Location = new System.Drawing.Point(250, 375);
+			this.progressBar6.Location = new System.Drawing.Point(250, 446);
 			this.progressBar6.MarqueeAnimationSpeed = 0;
 			this.progressBar6.Name = "progressBar6";
 			this.progressBar6.Size = new System.Drawing.Size(636, 29);
@@ -737,18 +737,8 @@ namespace Genetics
 		private System.Windows.Forms.Button makeOneGenButton;
 		private System.Windows.Forms.GroupBox groupBox4;
 		private System.Windows.Forms.Label populationCountLabel;
-		private System.Windows.Forms.ProgressBar progressBar1;
-		private System.Windows.Forms.ProgressBar progressBar2;
-		private System.Windows.Forms.ProgressBar progressBar3;
-		private System.Windows.Forms.ProgressBar progressBar4;
-		private System.Windows.Forms.ProgressBar progressBar5;
-		private System.Windows.Forms.ProgressBar progressBar6;
-		private System.Windows.Forms.ProgressBar progressBar7;
 		private System.Windows.Forms.GroupBox groupBox5;
 		private System.Windows.Forms.Label generationNumberLabel;
-		private System.Windows.Forms.ProgressBar progressBar8;
-		private System.Windows.Forms.ProgressBar progressBar9;
-		private System.Windows.Forms.ProgressBar progressBar10;
 		private System.Windows.Forms.ProgressBar genProgressBar;
 		private System.Windows.Forms.ProgressBar reproductionProgressBar;
 		private System.Windows.Forms.TextBox decileTextBox1;
@@ -761,6 +751,16 @@ namespace Genetics
 		private System.Windows.Forms.TextBox decileTextBox8;
 		private System.Windows.Forms.TextBox decileTextBox9;
 		private System.Windows.Forms.TextBox decileTextBox10;
+		private NewProgressBar progressBar1;
+		private NewProgressBar progressBar2;
+		private NewProgressBar progressBar3;
+		private NewProgressBar progressBar4;
+		private NewProgressBar progressBar5;
+		private NewProgressBar progressBar6;
+		private NewProgressBar progressBar7;
+		private NewProgressBar progressBar8;
+		private NewProgressBar progressBar9;
+		private NewProgressBar progressBar10;
 	}
 }
 
