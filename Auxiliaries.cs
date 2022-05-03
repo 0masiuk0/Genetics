@@ -73,7 +73,44 @@ namespace Genetics
 				return collection[choice];
 			}
 		}
+
+		public class ChosenMothersCollection<T> where T : System.IComparable<T>
+		{
+			SortedList<T, T> members;
+
+			public ChosenMothersCollection(int capacity)
+			{
+				members = new SortedList<T, T>(capacity);
+			}
+
+			public void Add(T newMember)
+			{
+				members.Add(newMember, newMember);
+			}
+
+			public int CountMembersBelowN(T N)
+			{
+				int result = 0;
+				foreach (KeyValuePair<T, T> m in members)
+				{
+					if (m.Value.CompareTo(N) < 0)
+						result++;
+					else
+						return result;
+				}
+				return result;
+			}
+
+			public bool Contains(T N) => members.ContainsKey(N);
+
+			public T[] ToArray()
+			{
+				T[] m = new T[members.Count];
+				int i = 0;
+				foreach (T ch in members.Values)
+					m[i++] = ch;
+				return m;
+			}
+		}
 	}
-
-
 }

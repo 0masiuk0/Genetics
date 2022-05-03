@@ -255,8 +255,12 @@ namespace Genetics
 		public override string ToString()
 		{
 			string s = "";
-			foreach (double d in GetPersonDescendance().Components)
-				s += d.ToString() + ", ";
+			var components = GetPersonDescendance().Components;
+			for (int i = 0; i < 7; i++ )
+			{
+				if (components[i] == 1.0) return possibleRaces[i].ToString();
+				s += components[i].ToString() + ", ";
+			}
 			return s.Substring(0, s.Length - 2);
 		}
 
@@ -266,5 +270,8 @@ namespace Genetics
 		static readonly object chromosomeChooserRandomGeneratorLock = new object();		
 	}
 
-	public enum Race { Moiran = 0, Julian = 1, Aivian = 2, Feklite = 3, Camelite = 4, Dynian = 5, Aidian = 6 }
+	public enum Race 
+	{
+		Moiran = 0, Julian = 1, Aivian = 2, Feklite = 3, Camelite = 4, Dynian = 5, Aidian = 6		
+	}
 }

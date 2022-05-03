@@ -1,4 +1,4 @@
-﻿#define ParallelComputation
+﻿//#define ParallelComputation
 
 using System;
 using System.Collections.Generic;
@@ -76,26 +76,41 @@ namespace Genetics
 			AdvanceGeneration();
 		}
 
-		int nextGenerationCount;
+		long nextGenerationCount;
+		int nextGenChildPerMomCount;
+		int nextGenrationExtraChildrenCount;
+		Auxiliaries.ChosenMothersCollection<long> chosenMotherIDs;
 
 		private void MakeNewGeneration(System.ComponentModel.BackgroundWorker backgroundWorker)
 		{
 			
 			progressReport.reproductionProgress = 0;
-			thisGenerationBirthProgress = 0;
 
 			lock (populationLock)
 			{
-				nextGenerationCount = (int)Math.Ceiling(PeopleCount * BirthRate);
+				nextGenerationCount = (long)Math.Ceiling(PeopleCount * BirthRate);
 				NextGeneration = new Person[nextGenerationCount];
 
 				this.backgroundWorker = backgroundWorker;
-				MotherIndex = 0;
+				nextGenChildPerMomCount = (int)(nextGenerationCount / ChicksCount);
+				nextGenrationExtraChildrenCount = (int)(nextGenerationCount % ChicksCount);
+
+				chosenMotherIDs = new Auxiliaries.ChosenMothersCollection<long>(nextGenrationExtraChildrenCount);
+
+				for (int i = 0; i < nextGenrationExtraChildrenCount; i++)
+				{
+					long chosenIndex;
+					do
+					{
+						chosenIndex = (long)Auxiliaries.GetRandomUlong((ulong)ChicksCount);
+					} while (chosenMotherIDs.Contains(chosenIndex));
+					chosenMotherIDs.Add(chosenIndex);
+				}
 
 #if ParallelComputation
-				Parallel.For(0, nextGenerationCount, DeliverBaby);
+				Parallel.For(0, ChicksCount, DeliverBaby);
 #else
-				for (int i = 0; i < nextGenerationCount; i++)
+				for (long i = 0; i < ChicksCount; i++)
 					DeliverBaby(i);
 				
 #endif
@@ -106,36 +121,34 @@ namespace Genetics
 			}
 			progressReport.reproductionProgress = 100;
 		}
-
-		int MotherIndex = 0;
-		int thisGenerationBirthProgress;
+						
 		readonly object MommyLock = new object();
 		readonly object CounterLock = new object();
 		System.ComponentModel.BackgroundWorker backgroundWorker;
 
-		void DeliverBaby(int i)
+		//i is now motherIndex
+		void DeliverBaby(long motherIndex)
 		{
-			int chosenMommyindex;
-			lock (MommyLock)
-			{
-				//mother index is circled around Chicks array here. "i" is number of baby being delivered, used for progress check.
-				chosenMommyindex = MotherIndex;
-				MotherIndex++;
-				if (MotherIndex == ChicksCount) MotherIndex = 0;
-				thisGenerationBirthProgress++;
-			}
-			Person mommy = Chicks[chosenMommyindex];
-			List<Person> daddyCandidates = ChooseMalePartnerCandidatesFor(chosenMommyindex);
-			Person daddy = mommy.ChooseMalePartnerFrom(daddyCandidates);
-			NextGeneration[i] = mommy.ConcieveFrom(daddy);
+			long firstBornIndex = motherIndex * nextGenChildPerMomCount + chosenMotherIDs.CountMembersBelowN(motherIndex);
+			int thisMotherChildrenCount = nextGenChildPerMomCount;
+			if (chosenMotherIDs.Contains(motherIndex))
+				thisMotherChildrenCount++;
 
-			int progress;
-			lock (CounterLock)
+			for (int j = 0; j < thisMotherChildrenCount; j++)
 			{
-				if (NextGeneration[i].IsWoman) nextGenChicksCount++; else nextGenDudesCount++;				
+				long childID = firstBornIndex + j;
+				Person mommy = Chicks[motherIndex];
+				List<Person> daddyCandidates = ChooseMalePartnerCandidatesFor(motherIndex);
+				Person daddy = mommy.ChooseMalePartnerFrom(daddyCandidates);
+				NextGeneration[childID] = mommy.ConcieveFrom(daddy);
+
+				lock (CounterLock)
+				{
+					if (NextGeneration[childID].IsWoman) nextGenChicksCount++; else nextGenDudesCount++;
+				}
 			}
 
-			progress = (int)Math.Round((thisGenerationBirthProgress) / (nextGenerationCount / 100.0));
+			int progress =  (int)Math.Round((motherIndex * nextGenChildPerMomCount) / (nextGenerationCount / 100.0));
 
 			if (progressReport.reproductionProgress < progress || progressReport.generationNumber != this.GenerationNumber)
 			{
